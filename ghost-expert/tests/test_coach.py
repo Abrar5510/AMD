@@ -27,9 +27,9 @@ def fake_verify(confidence=0.9):
     return verify
 
 
-def run(order, verify=None, cfg=None, secs_per_step=3):
+def run(order, verify=None, cfg=None, secs_per_step=3, embed=fake_embed):
     """Trainee does the steps in `order`, each for secs_per_step, then holds the final state 2 s."""
-    coach = Coach(PROC, np.eye(len(IDS), dtype=np.float32), fake_embed, verify or fake_verify(), cfg=cfg or Config())
+    coach = Coach(PROC, np.eye(len(IDS), dtype=np.float32), embed, verify or fake_verify(), cfg=cfg or Config())
     events, done, t = [], [], 0.0
     for k in order:
         for _ in range(secs_per_step * FPS):
@@ -73,6 +73,32 @@ def test_unconfirmed_steps_are_rechecked_not_accused():
 def test_unsure_model_asks_instead_of_accusing():
     _, events = run([1, 2, 3, 5], verify=fake_verify(confidence=0.5))
     assert not kinds(events, "interrupt") and kinds(events, "ask")
+
+
+def test_model_errors_never_swallow_an_interrupt():
+    # vLLM fails every call about step 4: the heartbeat errors in the same tick the jump to 5 is checked.
+    ok = fake_verify()
+    def flaky(procedure, sid, frames, keyframe):
+        if sid == 4:
+            raise TimeoutError("vLLM")
+        return ok(procedure, sid, frames, keyframe)
+    coach, events = run([1, 2, 3, 5], verify=flaky)
+    stops = kinds(events, "interrupt")
+    assert stops and stops[0].step == 4, stops
+    assert coach.error and 4 not in coach.done
+
+
+def test_one_wrong_done_never_clears_a_safety_step():
+    ok, lied = fake_verify(), []
+    def lie_once(procedure, sid, frames, keyframe):
+        v, secs = ok(procedure, sid, frames, keyframe)
+        if sid == 4 and not lied:
+            lied.append(1)
+            v = {**v, "done": True, "started": True}
+        return v, secs
+    coach, events = run([1, 2, 3, 5, 6], verify=lie_once)
+    assert lied and 4 not in coach.done
+    assert kinds(events, "interrupt") and kinds(events, "interrupt")[0].step == 4
 
 
 def test_non_critical_skip_is_a_hint():

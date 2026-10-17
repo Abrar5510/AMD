@@ -1,10 +1,48 @@
 # Ghost Expert
 
-An expert films a procedure once. Ghost Expert turns it into steps, then watches a trainee do the job live through a camera and coaches them out loud. It stops them before a safety-critical mistake.
+**Your best technician retires next year, and everything she knows leaves with her. She films one job, once. Ghost Expert watches every new hire do it, coaches them out loud, and stops them before they get hurt.**
 
-Everything runs on one AMD Instinct GPU: Gemma 3 (vision) served by vLLM on ROCm. Full plan: [../docs/13-ghost-expert-build-plan.md](../docs/13-ghost-expert-build-plan.md).
+Four models on one AMD Instinct GPU: Gemma 3 vision (vLLM on ROCm), SigLIP, Whisper, Kokoro. Full plan: [../docs/13-ghost-expert-build-plan.md](../docs/13-ghost-expert-build-plan.md).
 
-> Status: **Phase 5**: live coaching with voice questions, bilingual coaching (English/Italian) and a printable training record. Authoring and replay evals work too.
+## The 3-minute demo
+
+1. **Author (0:15).** The expert's narrated video goes in. Whisper, SigLIP and Gemma cut it into 8 steps with keyframes, a visual check and a safety flag on each. The expert fixes what's wrong and approves. *The expert owns the procedure; the AI only drafts it.*
+2. **Coach (0:35).** A judge does the lockout/tagout job under a top-down camera. Steps turn green as Gemma confirms them, and the voice says what's next.
+3. **The stop (1:10).** The judge reaches for the cover screws without testing that the machine is dead. The whole screen goes red, the voice says *"Stop. You haven't done step 4"*, the banner says what the coach saw, and the expert's own hands doing step 4 fill half the screen until the judge does it.
+4. **"Where does the filter go?" (1:40).** Hold to ask. The answer is spoken and the expert's clip of that moment plays.
+5. **Training record (2:05).** Time per step against the expert, the mistakes caught, a *Competent* or *Needs another run* verdict, and a printable PDF.
+
+If the live take misfires on stage, say "that's why we measure it" and switch to the replay: `/coach?id=loto-filter&src=/files/loto-filter/run.mp4`.
+
+## Why it isn't "just a prompt"
+
+A vision model is sometimes confidently wrong. If one wrong answer can stop a trainee, a correct trainee gets yelled at. So the model never decides alone:
+
+- **SigLIP** (every frame, ~10 ms) only guesses which step this looks like, to decide *when* to ask Gemma.
+- **Gemma 3** checks the guessed step and the newest skipped step *in parallel*: one round trip on the stop path.
+- **A deterministic rule engine** owns the state. A STOP needs **two agreeing Gemma checks on different frames**. A safety-critical step counts as done only after two agreeing checks, so one wrong "done" can never clear the step the trainee skipped. Unsure → it asks ("can you show me the tag?") instead of accusing. Model down or slow → it stays quiet; it never accuses on a missing answer.
+
+Stress test with a deliberately bad model, where Gemma is confidently wrong 5% of the time and SigLIP is wrong on 25% of frames ([eval/sim_results.md](eval/sim_results.md), `python -m scripts.sim_eval`):
+
+| | Skipped step 4 caught | Correct trainees falsely stopped | Stop latency p50 |
+|---|---|---|---|
+| One Gemma answer decides | 98% | **14%** | 0.8 s |
+| Ghost Expert rule engine | 98% | **0%** | 1.6 s |
+
+That's a simulation of the design, not a measurement of Gemma. The filmed numbers are below.
+
+## Results
+
+| Number | Value | How |
+|---|---|---|
+| Verify accuracy, 4 frames + keyframe (Gate 1) | _pending: run on the AMD box_ | `scripts.eval_verify` |
+| Skip-4 caught / false alarms on clean runs (Gate 2) | _pending_ | `scripts.run_eval` |
+| Gemma 3 12B verify latency p50 / p95, MI300X | _pending_ | `scripts.smoke_gemma` |
+| Rule engine under a 5%-wrong model | 98% caught, 0% false stops | `scripts.sim_eval` |
+
+Save each run's output for the slides, e.g. `... python -m scripts.run_eval eval/runs.csv | tee eval/results.md`.
+
+> Status: **Phase 5** is built: authoring, live coaching with voice questions, bilingual coaching (English/Italian) and the training record. Next: film the props, then run Gates 1 and 2 on the GPU box.
 
 ## Run it on the AMD Developer Cloud box
 
@@ -75,7 +113,7 @@ The risky core: given 4 frames and a step, Gemma returns `{observed, started, do
 How it decides ([app/coach.py](app/coach.py)):
 - **Fast tier:** SigLIP embeds every frame and compares it with the expert's steps, to guess which step this looks like. It's cheap and can be wrong.
 - **Slow tier:** Gemma verifies on a heartbeat (confirm the expected step), plus whenever the fast tier thinks the trainee jumped ahead.
-- **Rule engine:** owns the state. A step is done only when Gemma confirms it. Before accusing anyone, it re-checks the skipped steps, newest first, because they may be done but not yet confirmed. Skipping a ⚠ step → interrupt; otherwise → hint. If Gemma is unsure, it asks instead of accusing.
+- **Rule engine:** owns the state. A step is done only when Gemma confirms it (twice, on different frames, for a ⚠ step). Before accusing anyone, it re-checks the skipped steps, newest first, because they may be done but not yet confirmed. Skipping a ⚠ step → interrupt; otherwise → hint. Either fires only after `COACH_CONFIRM` (default 2) agreeing checks within `COACH_CONFIRM_S`. If Gemma is unsure, it asks instead of accusing. A failed or slow Gemma call (`VERIFY_TIMEOUT_S`) counts as unsure.
 
 Steps:
 1. Copy the expert video to `procedures/loto-filter/expert.mp4` (gitignored). Set each step's `"expert_clip": [start_s, end_s]` in `procedure.json` to the seconds where the expert does it.
@@ -98,7 +136,7 @@ Steps:
 
 **Gate 2:** every skip-4 run is caught and the clean runs have zero false alarms. Tune the `COACH_*` knobs in `.env` (see `.env.example`), re-run, and write down the knobs that pass.
 
-The rule engine has its own check with no GPU or models: `python -m tests.test_coach`.
+The rule engine has its own check with no GPU or models: `python -m tests.test_coach`. To see how a knob trades catch rate against false alarms before tuning at the venue, run `COACH_CONFIRM=1 python -m scripts.sim_eval`.
 
 ## Phase 3: authoring (expert video → procedure)
 
@@ -130,7 +168,8 @@ Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo lapt
 - The browser sends 4 frames/s over a WebSocket. The server runs the coach on the newest frame. Frames that arrive while Gemma is thinking are kept for the verify window but not processed, so the session never falls behind.
 - **Setup screen** first: the procedure, the coaching language and **Start camera** (or *replay a recording*). Nothing else until the session starts.
 - **Step bar** at the top (green done, yellow current, red triangle = safety-critical). The current step's instruction and the **expert keyframe** are on the right. The coach's spoken line shows as a subtitle on the live view.
-- **Interrupt:** the live view turns red with a STOP banner, the voice says what was skipped, and the expert's clip of that step loops on the right until the trainee does it.
+- **Interrupt:** the whole screen gets a red frame, a STOP banner says which step was skipped and what the coach saw, the voice says it too, and the expert's clip of that step grows to half the screen and loops until the trainee does it.
+- **What Gemma sees:** the top-right of the live view shows the model's latest observation ("Gemma · step 4: the hand is near the lamp…"), so the audience can watch it reason.
 - **Voice:** Kokoro-82M on the AMD GPU (`af_heart` in English, `if_sara` in Italian). It warms up when the app starts and repeated lines are cached, so an interrupt you've heard before plays instantly. If Kokoro is missing, still warming up, slow (over 3 s) or broken, the page speaks that line with the browser's own voice and the session carries on. The benchmark strip shows `voice Kokoro N ms` or `voice browser`. Set `TTS=browser` in `.env` to skip Kokoro entirely.
 - **Benchmark strip** along the bottom, kept quiet: GPU name, VRAM in use (including vLLM), frames/s, SigLIP ms, and Gemma p50/p95.
 - **Presenter keys:** `Space` dismisses an interrupt, `N` marks the current step done, `R` resets the session.

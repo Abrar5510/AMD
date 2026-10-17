@@ -71,7 +71,7 @@ def load(proc_dir: Path):
 def state(coach: Coach):
     return {"done": sorted(coach.done), "expected": coach.expected(), "complete": coach.completed,
             "guess": coach.ids[int(coach.probs.argmax())] if coach.probs is not None else None,
-            "guess_p": round(float(coach.probs.max()), 2) if coach.probs is not None else None}
+            "guess_p": round(float(coach.probs.max()), 2) if coach.probs is not None else None, "seen": coach.seen}
 
 
 async def run_session(ws: WebSocket, proc_dir: Path):
@@ -132,6 +132,9 @@ async def run_session(ws: WebSocket, proc_dir: Path):
             except Exception as e:  # e.g. vLLM down: tell the presenter, keep the session alive
                 await ws.send_json({"type": "error", "message": f"{type(e).__name__}: {e}"})
                 continue
+            if coach.error:  # a verify call failed: the coach stayed quiet, the presenter should know why
+                await ws.send_json({"type": "error", "message": coach.error})
+                coach.error = None
             if frame:
                 stats.ticks.append(time.perf_counter())
             await ws.send_json({"type": "tick", "t": frame[0] if frame else None,

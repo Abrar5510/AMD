@@ -107,9 +107,26 @@
   #caption .k.error { color: #ff8589; }
 
   #banner { position: absolute; z-index: 3; top: 0; left: 0; right: 0; padding: 18px 22px; background: var(--stop); color: #fff;
-            font-size: 22px; font-weight: 600; letter-spacing: -.01em; display: none; }
+            font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -.02em; display: none; text-wrap: balance; }
+  #banner .why { display: block; margin-top: 6px; font: 500 14px/1.4 var(--mono); letter-spacing: 0; color: rgba(255,255,255,.85); }
+  #banner .why:empty { display: none; }
   #live.stop #banner { display: block; }
-  #live.stop #livetag { display: none; }
+  #live.stop #livetag, #live.stop #seen { display: none; }
+
+  /* what Gemma last said it saw: the model's reasoning, visible */
+  #seen { left: auto; right: 14px; max-width: min(60%, 520px); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          text-transform: none; letter-spacing: 0; color: var(--muted); }
+  #seen b { color: var(--accent); font-weight: 500; }
+  #seen:empty { display: none; }
+
+  /* interrupt: the whole screen stops and the expert's hands take half of it */
+  main { transition: grid-template-columns .35s ease; }
+  body.stop main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  body.stop #expert { flex: 1 1 auto; aspect-ratio: auto; min-height: 220px; }
+  body.stop #instr h2 { color: #ff8589; }
+  body.stop::after { content: ""; position: fixed; inset: 0; z-index: 5; pointer-events: none;
+                     box-shadow: inset 0 0 0 6px var(--stop), inset 0 0 140px rgba(229,72,77,.35); animation: pulse 1s ease-in-out infinite alternate; }
+  @media (prefers-reduced-motion: reduce) { body.stop::after { animation: none; } main { transition: none; } }
   #live.stop::before { box-shadow: inset 0 0 0 4px var(--stop); }
   #live.stop::after { content: ""; position: absolute; inset: 0; background: rgba(229,72,77,.16); pointer-events: none; animation: pulse 1s ease-in-out infinite alternate; }
   #live.ask::before { box-shadow: inset 0 0 0 3px var(--accent); }
@@ -148,7 +165,8 @@
     #app { height: auto; min-height: 100dvh; }
     .top { padding: 12px 16px; } .top .sep, #ptitle { display: none; } #rail { padding: 0 16px 14px; } main { padding: 0 16px 16px; grid-template-columns: minmax(0, 1fr); }
     #live { aspect-ratio: 16 / 10; } .side { overflow: visible; } .status { padding: 10px 16px; }
-    #banner { font-size: 17px; padding: 12px 16px; } #caption { font-size: 15px; bottom: 12px; }
+    #banner { font-size: 19px; padding: 12px 16px; } #caption { font-size: 15px; bottom: 12px; }
+    body.stop main { grid-template-columns: minmax(0, 1fr); } #seen { display: none; }
   }
 
   /* ---------- training record: a document, printable to PDF ---------- */
@@ -224,6 +242,7 @@
     <section id="live" class="pane" aria-label="Trainee camera">
       <video id="src" autoplay muted playsinline></video>
       <span class="tag" id="livetag">Live</span>
+      <span class="tag" id="seen" aria-live="off"></span>
       <div id="banner" role="alert"></div>
       <div id="caption" aria-live="polite"></div>
     </section>
@@ -276,7 +295,7 @@ const PHRASES = {
     thanks: "Thank you. That's the safe way. Carry on.",
     complete: "Procedure complete. Well done.",
     doneWhen: "Done when", watch: (id) => `Expert · step ${id}`, step: "Step", of: "of", critical: "Safety-critical",
-    finished: "Procedure complete", allDone: "Every step confirmed.",
+    finished: "Procedure complete", allDone: "Every step confirmed.", saw: "Coach saw:",
   },
   it: {
     voice: "it-IT",
@@ -289,7 +308,7 @@ const PHRASES = {
     thanks: "Grazie. Così è sicuro. Continua.",
     complete: "Procedura completata. Ottimo lavoro.",
     doneWhen: "Fatto quando", watch: (id) => `Esperto · passo ${id}`, step: "Passo", of: "di", critical: "Sicurezza",
-    finished: "Procedura completata", allDone: "Tutti i passi confermati.",
+    finished: "Procedura completata", allDone: "Tutti i passi confermati.", saw: "Il coach ha visto:",
   },
 };
 const P = () => PHRASES[lang];
@@ -449,6 +468,7 @@ function caption(kind, text) {
 
 function clearStop() {
   stop = null;
+  document.body.classList.remove("stop");
   $("live").classList.remove("stop", "ask");
   $("side").classList.remove("stop");
   renderRail();
@@ -460,7 +480,8 @@ function onEvent(e) {
   if (e.kind === "interrupt") {
     const b = stepById(e.step);
     stop = { step: e.step, at: e.at_step };
-    $("banner").textContent = P().banner(b);
+    $("banner").replaceChildren(P().banner(b), el("span", { className: "why", textContent: e.observed ? `${P().saw} ${e.observed}` : "" }));
+    document.body.classList.add("stop");
     $("live").classList.add("stop");
     $("side").classList.add("stop");
     showStep(e.step);   // the side panel shows what to do now: the skipped step
@@ -485,6 +506,10 @@ function onEvent(e) {
     log.completedAt = e.t;
     setTimeout(openReport, 2500);
   }
+}
+
+function renderSeen(seen) {
+  $("seen").replaceChildren(...(seen?.text ? [el("b", { textContent: `Gemma · ${P().step.toLowerCase()} ${seen.step}` }), ` ${seen.text}`] : []));
 }
 
 function renderBench(st) {
@@ -523,6 +548,7 @@ function connect() {
       msg.events.forEach(onEvent);
       renderRail();
       if (state.expected !== before && !stop) showStep(state.expected);
+      renderSeen(state.seen);
       renderBench(msg.stats);
     } else if (msg.type === "reset") {
       log = { ...log, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [] };
