@@ -4,7 +4,7 @@ An expert films a procedure once. Ghost Expert turns it into steps, then watches
 
 Everything runs on one AMD Instinct GPU: Gemma 3 (vision) served by vLLM on ROCm. Full plan: [../docs/13-ghost-expert-build-plan.md](../docs/13-ghost-expert-build-plan.md).
 
-> Status: **Phase 1**: the verify call (does Gemma see which step the trainee is on?). No live coaching yet.
+> Status: **Phase 2**: the full coach (SigLIP fast tier, Gemma verify, rule engine) replayed over recorded runs. No live camera UI yet.
 
 ## Run it on the AMD Developer Cloud box
 
@@ -38,7 +38,7 @@ From your laptop, vLLM stays private behind an SSH tunnel: `ssh -L 8000:localhos
 
 - **`rocm/vllm:latest` won't start, or Gemma 3 vision errors:** try a tagged image from [hub.docker.com/r/rocm/vllm/tags](https://hub.docker.com/r/rocm/vllm/tags) via `VLLM_IMAGE` in `.env`. Once one works, pin that tag.
 - **`--limit-mm-per-prompt` rejected:** older vLLM wants `image=8` instead of the JSON form. Edit it in `docker-compose.yml`.
-- **Permission denied on `/dev/dri`:** add `render` under `group_add`.
+- **Permission denied on `/dev/dri`:** add `render` under `group_add` in the `x-amd-gpu` block of `docker-compose.yml`.
 - **Out of memory:** lower `MAX_MODEL_LEN` or raise `GPU_MEM_UTIL`.
 
 ## Phase 0 results
@@ -69,6 +69,36 @@ The risky core: given 4 frames and a step, Gemma returns `{observed, started, do
    Debug one clip with `--video eval/runs/skip4.mp4 --t 41 --step 5`.
 
 **Gate 1:** at least 90% of clips right, and steps 2 and 4 (marked ⚠) right. If it fails, try these in order: bigger and more saturated props, a dark tablecloth, moving the camera closer to the work area, adding keyframes, and `gemma-3-27b-it`. Re-run after each change.
+
+## Phase 2: the coach, replayed (Gate 2)
+
+How it decides ([app/coach.py](app/coach.py)):
+- **Fast tier:** SigLIP embeds every frame and compares it with the expert's steps, to guess which step this looks like. It's cheap and can be wrong.
+- **Slow tier:** Gemma verifies on a heartbeat (confirm the expected step), plus whenever the fast tier thinks the trainee jumped ahead.
+- **Rule engine:** owns the state. A step is done only when Gemma confirms it. Before accusing anyone, it re-checks the skipped steps, newest first, because they may be done but not yet confirmed. Skipping a ⚠ step → interrupt; otherwise → hint. If Gemma is unsure, it asks instead of accusing.
+
+Steps:
+1. Copy the expert video to `procedures/loto-filter/expert.mp4` (gitignored). Set each step's `"expert_clip": [start_s, end_s]` in `procedure.json` to the seconds where the expert does it.
+2. Build the reference embeddings (commit the resulting `refs.npy`):
+   ```bash
+   docker compose exec app python -m scripts.build_refs
+   ```
+   It prints the most similar pair of steps. Close to 1.0 means the fast tier will confuse them: make those steps look more different, or accept that Gemma does the work there.
+3. Record trainee runs in `eval/runs/`: at least 5 clean runs and at least 3 that skip step 4. List them in `eval/runs.csv`:
+   ```
+   video,expect,error_t
+   runs/clean1.mp4,,
+   runs/skip4-a.mp4,interrupt:4,41.0
+   ```
+   `error_t` = the second the trainee starts the step they shouldn't (reaching for the cover screws).
+4. Replay:
+   ```bash
+   docker compose exec app python -m scripts.run_eval eval/runs.csv
+   ```
+
+**Gate 2:** every skip-4 run is caught and the clean runs have zero false alarms. Tune the `COACH_*` knobs in `.env` (see `.env.example`), re-run, and write down the knobs that pass.
+
+The rule engine has its own check with no GPU or models: `python -m tests.test_coach`.
 
 ## License
 

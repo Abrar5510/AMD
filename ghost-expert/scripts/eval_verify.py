@@ -14,25 +14,13 @@ Exits non-zero if fewer than 90% of clips are fully right (both started and done
 import argparse
 import csv
 import json
-import subprocess
 from collections import defaultdict
 from pathlib import Path
 
+from app.video import grab
 from app.vlm import MODEL, verify
 
 N_FRAMES, GAP_S = 4, 0.5  # same window the live coach will send
-
-
-def grab(video, t):
-    """One JPEG frame at second t."""
-    r = subprocess.run(
-        ["ffmpeg", "-loglevel", "error", "-ss", f"{max(t, 0):.3f}", "-i", str(video),
-         "-frames:v", "1", "-f", "image2pipe", "-vcodec", "mjpeg", "-"],
-        capture_output=True,
-    )
-    if r.returncode or not r.stdout:
-        raise ValueError(f"no frame at {t:.1f}s in {video} (past the end?) {r.stderr.decode().strip()[-200:]}")
-    return r.stdout
 
 
 def clip(video, t):

@@ -3,3 +3,4 @@
 __pycache__/
 .venv/
 eval/runs/
+procedures/*/expert.mp4
