@@ -39,3 +39,51 @@ def verify_messages(procedure, step, frame_urls, keyframe_url=None):
         {"role": "user", "content": [{"type": "text", "text": text}]
          + [{"type": "image_url", "image_url": {"url": u}} for u in urls]},
     ]
+
+
+AUTHOR_SYSTEM = """You turn an expert's recorded demonstration into a step-by-step procedure for training new technicians.
+You get the expert's narration split into numbered segments with times, and contact sheets with one frame per
+segment (the yellow number on each frame is its segment number).
+
+Group consecutive segments into steps. One step = one action a trainee must do and a camera can check.
+Use the expert's own words where you can. Skip nothing the expert does.
+- title: a few words, imperative ("Hang the tag").
+- instruction: one or two sentences telling a trainee what to do.
+- visual_check: what a top-down camera sees when the step is done. Concrete: objects, colors, positions.
+- safety_critical: true if skipping the step or doing it out of order can hurt someone or damage equipment.
+- common_mistake: the likely mistake for this step, or an empty string."""
+
+AUTHOR_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "title": {"type": "string"},
+        "steps": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "first_segment": {"type": "integer"},
+                    "last_segment": {"type": "integer"},
+                    "title": {"type": "string"},
+                    "instruction": {"type": "string"},
+                    "visual_check": {"type": "string"},
+                    "safety_critical": {"type": "boolean"},
+                    "common_mistake": {"type": "string"},
+                },
+                "required": ["first_segment", "last_segment", "title", "instruction", "visual_check",
+                             "safety_critical", "common_mistake"],
+            },
+        },
+    },
+    "required": ["title", "steps"],
+}
+
+
+def author_messages(segments, texts, sheet_urls):
+    """segments: [(start_s, end_s)], texts: narration per segment, sheet_urls: contact sheet data URLs."""
+    lines = [f'{i}. [{a:.1f}-{b:.1f}s] "{t or "(no narration)"}"' for i, ((a, b), t) in enumerate(zip(segments, texts), 1)]
+    return [
+        {"role": "system", "content": AUTHOR_SYSTEM},
+        {"role": "user", "content": [{"type": "text", "text": "Segments:\n" + "\n".join(lines)}]
+         + [{"type": "image_url", "image_url": {"url": u}} for u in sheet_urls]},
+    ]

@@ -83,11 +83,23 @@ class Coach:
     def _verify(self, sid, frames):
         return self.verify(self.procedure, sid, frames, self.keyframes.get(sid))
 
+    def remember(self, t, jpeg):
+        """Keep a frame for the verify window without processing it (live mode drops frames while Gemma runs)."""
+        self.buf.append((t, jpeg))
+        while self.buf[0][0] < t - self.cfg.gap_s * self.cfg.n_frames - 1:
+            self.buf.popleft()
+
+    def advance(self, t):
+        """Presenter override: mark the expected step done (the demo must never get stuck on stage)."""
+        sid = self.expected()
+        if sid is None:
+            return []
+        self.done.add(sid)
+        return [Event(t, "done", sid, f"Step {sid} marked done by the presenter.")]
+
     def feed(self, t, jpeg):
         cfg = self.cfg
-        self.buf.append((t, jpeg))
-        while self.buf[0][0] < t - cfg.gap_s * cfg.n_frames - 1:
-            self.buf.popleft()
+        self.remember(t, jpeg)
 
         sims = self.refs @ self.embed([jpeg])[0]
         p = np.exp((sims - sims.max()) / cfg.temp)

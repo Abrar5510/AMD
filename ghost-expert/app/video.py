@@ -1,6 +1,8 @@
 """Frames out of recorded videos with ffmpeg (replay, eval, reference building). JPEG bytes, 512 px wide."""
 import subprocess
 
+import numpy as np
+
 SCALE = "scale=512:-2"
 
 
@@ -27,3 +29,16 @@ def frames(video, fps, start=0.0, end=None):
     # 0xFFD9 can't appear inside JPEG entropy data (0xFF is byte-stuffed), so the split is exact.
     for i, chunk in enumerate(data.split(b"\xff\xd9")[:-1]):
         yield start + i / fps, chunk + b"\xff\xd9"
+
+
+def audio(video, sr=16000):
+    """Mono float32 samples at sr (what Whisper wants). Empty array if the video has no audio track."""
+    r = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(video), "-vn", "-ac", "1", "-ar", str(sr),
+                        "-f", "f32le", "-"], capture_output=True)
+    return np.frombuffer(r.stdout, np.float32) if r.returncode == 0 else np.zeros(0, np.float32)
+
+
+def duration(video):
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(video)],
+                       capture_output=True, check=True, text=True)
+    return float(r.stdout.strip())

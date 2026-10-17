@@ -1,6 +1,6 @@
 """Build the fast tier's reference embeddings: one mean SigLIP embedding per step of the expert video.
 
-Needs "expert_clip": [start_s, end_s] on every step of procedure.json (set by hand until Phase 3 authoring).
+Needs "expert_clip": [start_s, end_s] on every step of procedure.json (set by hand). Authoring (app/author.py) builds refs.npy itself on approve; use this after hand edits.
 
     python -m scripts.build_refs --procedure procedures/loto-filter/procedure.json
 Writes refs.npy next to procedure.json, rows in step order.
@@ -11,10 +11,9 @@ from pathlib import Path
 
 import numpy as np
 
+from app.author import FPS, step_refs
 from app.models import embed
 from app.video import frames
-
-FPS = 2
 
 
 def main():
@@ -30,17 +29,9 @@ def main():
     if missing:
         raise SystemExit(f"set expert_clip [start_s, end_s] in {proc_path} for steps {missing}")
 
-    refs = []
-    for s in procedure["steps"]:
-        start, end = s["expert_clip"]
-        jpegs = [j for _, j in frames(video, FPS, start, end)]
-        if not jpegs:
-            raise SystemExit(f"step {s['id']}: no frames in {video} between {start}s and {end}s")
-        # ponytail: one mean vector per step; switch to nearest-frame matching if steps look alike on average.
-        mean = embed(jpegs).mean(axis=0)
-        refs.append(mean / np.linalg.norm(mean))
-        print(f"step {s['id']}: {len(jpegs)} frames")
-    refs = np.stack(refs)
+    fr = list(frames(video, FPS))
+    refs = step_refs(embed([j for _, j in fr]), np.array([t for t, _ in fr]), procedure["steps"])
+    print(f"{len(fr)} frames embedded")
 
     # How separable are the steps? Off-diagonal similarity close to 1.0 means the fast tier can't tell them apart.
     sims = refs @ refs.T

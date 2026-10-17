@@ -4,7 +4,7 @@ An expert films a procedure once. Ghost Expert turns it into steps, then watches
 
 Everything runs on one AMD Instinct GPU: Gemma 3 (vision) served by vLLM on ROCm. Full plan: [../docs/13-ghost-expert-build-plan.md](../docs/13-ghost-expert-build-plan.md).
 
-> Status: **Phase 2**: the full coach (SigLIP fast tier, Gemma verify, rule engine) replayed over recorded runs. No live camera UI yet.
+> Status: **Phase 4**: live coaching in the browser (camera → AMD GPU → voice + interrupt with the expert's clip). Authoring and replay evals work too.
 
 ## Run it on the AMD Developer Cloud box
 
@@ -99,6 +99,41 @@ Steps:
 **Gate 2:** every skip-4 run is caught and the clean runs have zero false alarms. Tune the `COACH_*` knobs in `.env` (see `.env.example`), re-run, and write down the knobs that pass.
 
 The rule engine has its own check with no GPU or models: `python -m tests.test_coach`.
+
+## Phase 3: authoring (expert video → procedure)
+
+1. **Draft:** Whisper turns the narration into sentences with word-level timing. SigLIP finds scene changes. Together they cut the video into segments. Gemma sees the narration and numbered contact sheets, one frame per segment, and groups the segments into steps with a title, instruction, visual check, safety flag and common mistake. Code repairs any gaps or overlaps in Gemma's grouping, so steps always cover the whole video in order.
+2. **Expert edit:** open `http://<box>:8080/?id=loto-filter`. Fix titles and checks, flip ⚠, move a boundary to the playhead, split, merge or delete steps. Every change is saved and counted ("Expert edits: 2"; that's the Gate 3 number).
+3. **Approve:** writes `procedure.json`, keyframes and `refs.npy`, which is everything the coach needs. No separate `build_refs` step is required.
+
+In the browser: pick an id, choose the video, click **Upload & draft**, then edit and click **Approve**. From the command line on the box:
+```bash
+cp my-expert-video.mp4 procedures/loto-filter/expert.mp4
+docker compose exec app python -m app.author procedures/loto-filter
+docker compose exec app python -m app.author procedures/loto-filter --approve
+```
+
+**Narrate while you film.** Short sentences that start with "First / Next / Now / Then / Finally" (or "Poi / Ora / Infine") give the cleanest cuts.
+
+**The app URL is public.** Set `APP_TOKEN` in `.env`: uploads, drafts, edits and approval then need it, and the page picks it up from `?token=...` in the URL. Uploads are capped at `MAX_UPLOAD_MB` (default 500).
+
+**Gate 3 (plan Phase 3):** the LOTO video becomes a correct 8-step procedure after ≤3 edits.
+
+Checks with no models: `python -m tests.test_author`.
+
+## Phase 4: the live coach
+
+Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo laptop, click **Start camera**, and point it top-down at the work area.
+
+- The browser sends 4 frames/s over a WebSocket. The server runs the coach on the newest frame. Frames that arrive while Gemma is thinking are kept for the verify window but not processed, so the session never falls behind.
+- **Step rail** at the top (✓ done, ● current, ⚠ safety-critical). The **expert keyframe** and instruction for the current step are on the right.
+- **Interrupt:** the live view turns red with a STOP banner, the voice says what was skipped, and the expert's clip of that step loops on the right until the trainee does it.
+- **Voice:** the browser's built-in speech (Web Speech API). Pick a good system voice on the demo laptop (macOS "Premium" voices sound best).
+- **Benchmark strip** at the bottom: GPU name, VRAM in use (including vLLM), frames/s, SigLIP ms, and Gemma p50/p95.
+- **Presenter keys:** `Space` dismisses an interrupt, `N` marks the current step done, `R` resets the session.
+- **Replay instead of the camera:** use the file picker, or put a recording at `procedures/<id>/run.mp4` and open `/coach?id=<id>&src=/files/<id>/run.mp4`. This is the stage fallback if the camera or lighting misbehaves.
+
+**Gate 3 (plan Phase 4):** a teammate who hasn't seen the code does the task 3 times. The interrupt fires when they skip step 4, and never when they don't.
 
 ## License
 

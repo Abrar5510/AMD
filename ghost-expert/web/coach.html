@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghost Expert · Coach</title>
+<style>
+  :root {
+    --bg: #0f1114; --panel: #171a1f; --line: #2a2f37; --text: #e8eaed; --muted: #8b93a1;
+    --accent: #ffd200; --danger: #ff3b3b; --warn: #ff9f1a; --ok: #3ecf8e;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+         display: grid; grid-template-rows: auto auto 1fr auto; }
+  input, button, select { font: inherit; color: inherit; }
+  button { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  button.primary { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 600; }
+  header { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 16px; margin: 0; }
+  header h1 span { color: var(--accent); }
+  #ptitle { color: var(--muted); }
+  .grow { flex: 1; }
+  #conn { font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--line); }
+  #conn.on { background: var(--ok); color: #111; }
+  #rail { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; scrollbar-width: thin; }
+  .chip { flex: 1 0 120px; min-width: 0; padding: 8px 10px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line);
+          font-size: 13px; transition: background .2s, border-color .2s; }
+  .chip b { display: block; font-size: 12px; color: var(--muted); }
+  .chip .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .chip.crit b::after { content: " ⚠"; color: var(--danger); }
+  .chip.done { background: #15301f; border-color: var(--ok); }
+  .chip.done b::before { content: "✓ "; color: var(--ok); }
+  .chip.cur { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .chip.cur b::before { content: "● "; color: var(--accent); }
+  .chip.skipped { border-color: var(--danger); background: #3a1414; }
+  main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; padding: 0 20px 16px; min-height: 0; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } .pane { aspect-ratio: 16 / 9; min-height: 0; } }
+  .pane { position: relative; background: #000; border-radius: 10px; overflow: hidden; border: 3px solid transparent; min-height: 240px;
+          display: flex; align-items: center; justify-content: center; transition: border-color .15s; }
+  .pane video, .pane img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .label { position: absolute; top: 10px; left: 10px; font-size: 12px; padding: 3px 8px; border-radius: 4px; background: rgba(0,0,0,.6); }
+  #live.stop { border-color: var(--danger); }
+  #live.ask { border-color: var(--warn); }
+  #banner { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 18px; font-size: 20px; font-weight: 700;
+            background: var(--danger); color: #fff; display: none; }
+  #live.stop #banner { display: block; }
+  #live.stop::after { content: ""; position: absolute; inset: 0; background: rgba(255, 40, 40, .18); pointer-events: none;
+                      animation: pulse 1s ease-in-out infinite alternate; }
+  @keyframes pulse { from { opacity: .4; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { #live.stop::after { animation: none; } }
+  .side { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; min-height: 0; }
+  #expert.stop { border-color: var(--danger); }
+  #instr { background: var(--panel); border-radius: 10px; padding: 12px 14px; }
+  #instr h2 { margin: 0 0 4px; font-size: 18px; }
+  #instr p { margin: 4px 0; color: var(--muted); }
+  footer { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 10px 20px; background: var(--panel); border-top: 1px solid var(--line); }
+  #caption { font-size: 17px; flex: 1 1 300px; }
+  #caption .k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 2px 6px; border-radius: 4px; margin-right: 8px; background: var(--line); }
+  #caption .k.interrupt { background: var(--danger); color: #fff; }
+  #caption .k.hint, #caption .k.ask { background: var(--warn); color: #111; }
+  #caption .k.done, #caption .k.complete { background: var(--ok); color: #111; }
+  #bench { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+  #bench b { color: var(--text); font-weight: 600; }
+  .keys { font-size: 12px; color: var(--muted); }
+  kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font: 11px ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ghost <span>Expert</span> · Coach</h1>
+  <span id="ptitle"></span>
+  <span class="grow"></span>
+  <input id="file" type="file" accept="video/*" title="Replay a recorded run instead of the camera" style="max-width:220px">
+  <button id="start" class="primary">Start camera</button>
+  <span id="conn">offline</span>
+</header>
+<div id="rail"></div>
+<main>
+  <div id="live" class="pane">
+    <video id="src" autoplay muted playsinline></video>
+    <span class="label">Trainee · live</span>
+    <div id="banner"></div>
+  </div>
+  <div class="side">
+    <div id="expert" class="pane">
+      <img id="kf" alt="">
+      <video id="clip" muted playsinline style="display:none"></video>
+      <span class="label" id="elabel">Expert</span>
+    </div>
+    <div id="instr"><h2>Press Start</h2><p>Point the camera at the work area.</p></div>
+  </div>
+</main>
+<footer>
+  <div id="caption"></div>
+  <div id="bench"></div>
+  <div class="keys"><kbd>Space</kbd> dismiss · <kbd>N</kbd> next step · <kbd>R</kbd> reset</div>
+</footer>
+<canvas id="cv" hidden></canvas>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const pid = params.get("id"), token = params.get("token");
+const FPS = 4, WIDTH = 512;
+let ws = null, proc = null, state = null, timer = null, t0 = 0, replay = false;
+let stop = null;          // {step, at} while an interrupt is active
+let clipRange = null;
+
+function el(tag, props = {}, ...kids) { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; }
+const stepById = (id) => proc.steps.find((s) => s.id === id);
+const fileUrl = (path) => `/files/${encodeURIComponent(pid)}/${path}`;
+
+// ---------- speech: the browser's own TTS ----------
+function say(text, urgent = false) {
+  if (!("speechSynthesis" in window)) return;
+  if (urgent) speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1.05;
+  u.lang = "en-US";
+  speechSynthesis.speak(u);
+}
+
+// ---------- UI ----------
+function renderRail() {
+  $("rail").replaceChildren(...proc.steps.map((s) => el("div", {
+    className: "chip" + (s.safety_critical ? " crit" : "")
+      + (state?.done.includes(s.id) ? " done" : "")
+      + (state?.expected === s.id ? " cur" : "")
+      + (stop?.step === s.id ? " skipped" : ""),
+  }, el("b", { textContent: `Step ${s.id}` }), el("span", { className: "t", textContent: s.title }))));
+}
+
+function showStep(id) {
+  const s = id && stepById(id);
+  if (!s) {
+    $("instr").replaceChildren(el("h2", { textContent: "Procedure complete" }), el("p", { textContent: "Every step confirmed." }));
+    return;
+  }
+  $("instr").replaceChildren(
+    el("h2", { textContent: `${s.id}. ${s.title}` }),
+    el("p", { textContent: s.instruction }),
+    el("p", { textContent: `Done when: ${s.visual_check}` }));
+  if (!stop) showKeyframe(s);
+}
+
+function showKeyframe(s) {
+  $("clip").pause(); $("clip").style.display = "none"; clipRange = null;
+  $("kf").style.display = s.keyframe ? "block" : "none";
+  if (s.keyframe) $("kf").src = fileUrl(s.keyframe);
+  $("elabel").textContent = `Expert · step ${s.id}`;
+  $("expert").classList.remove("stop");
+}
+
+function playClip(s) {
+  if (!s.expert_clip) return showKeyframe(s);
+  const v = $("clip");
+  $("kf").style.display = "none"; v.style.display = "block";
+  if (!v.src.endsWith("expert.mp4")) v.src = fileUrl("expert.mp4");
+  clipRange = s.expert_clip;
+  v.currentTime = clipRange[0];
+  v.play().catch(() => {});
+  $("elabel").textContent = `Expert doing step ${s.id}: watch`;
+  $("expert").classList.add("stop");
+}
+$("clip").ontimeupdate = () => {   // loop the expert's clip until the trainee does the step
+  const v = $("clip");
+  if (clipRange && v.currentTime >= clipRange[1]) v.currentTime = clipRange[0];
+};
+
+function caption(kind, text) {
+  $("caption").replaceChildren(el("span", { className: `k ${kind}`, textContent: kind }), text);
+}
+
+function clearStop() {
+  stop = null;
+  $("live").classList.remove("stop", "ask");
+  renderRail();
+  showStep(state?.expected);
+}
+
+function onEvent(e) {
+  if (e.kind === "interrupt") {
+    stop = { step: e.step, at: e.at_step };
+    $("banner").textContent = `STOP: do step ${e.step} first (${stepById(e.step).title})`;
+    $("live").classList.add("stop");
+    playClip(stepById(e.step));
+    caption("interrupt", e.text);
+    say(e.text + " Here's how the expert does it.", true);
+  } else if (e.kind === "hint" || e.kind === "ask") {
+    $("live").classList.add("ask");
+    setTimeout(() => $("live").classList.remove("ask"), 2500);
+    caption(e.kind, e.text);
+    say(e.text);
+  } else if (e.kind === "done") {
+    if (stop && e.step === stop.step) {
+      clearStop();
+      say("Thank you. That's the safe way. Carry on.", true);
+    }
+    const next = state?.expected && stepById(state.expected);
+    caption("done", e.text);
+    if (next && !stop) say(`Good. Next: ${next.title}.`);
+  } else if (e.kind === "complete") {
+    caption("complete", e.text);
+    say(e.text);
+  }
+}
+
+function renderBench(st) {
+  const items = [["GPU", st.gpu], ["VRAM GB", st.vram_gb], ["frames/s", st.fps], ["SigLIP ms", st.siglip_ms],
+                 ["Gemma p50 ms", st.gemma_p50_ms], ["p95", st.gemma_p95_ms], ["calls", st.gemma_calls]];
+  $("bench").replaceChildren(...items.filter(([, v]) => v !== undefined && v !== null)
+    .map(([k, v]) => el("span", {}, `${k} `, el("b", { textContent: v }))));
+}
+
+// ---------- connection ----------
+function connect() {
+  const q = token ? `?token=${encodeURIComponent(token)}` : "";
+  ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws/coach/${encodeURIComponent(pid)}${q}`);
+  ws.binaryType = "arraybuffer";
+  ws.onopen = () => { $("conn").textContent = "connected"; $("conn").className = "on"; };
+  ws.onclose = (e) => {
+    $("conn").textContent = e.code === 4403 ? "wrong token" : e.code === 4404 ? "no approved procedure" : "offline";
+    $("conn").className = "";
+    clearInterval(timer);
+  };
+  ws.onmessage = (m) => {
+    const msg = JSON.parse(m.data);
+    if (msg.type === "hello") {
+      proc = msg.procedure; state = msg.state;
+      $("ptitle").textContent = proc.title;
+      renderRail(); showStep(state.expected); renderBench(msg.stats);
+      say(`Let's begin. Step 1: ${proc.steps[0].title}. ${proc.steps[0].instruction}`);
+    } else if (msg.type === "tick") {
+      const before = state?.expected;
+      state = msg.state;
+      msg.events.forEach(onEvent);
+      renderRail();
+      if (state.expected !== before) showStep(state.expected);
+      renderBench(msg.stats);
+    } else if (msg.type === "reset") {
+      clearStop(); caption("reset", "Session reset.");
+    } else if (msg.type === "error") {
+      caption("error", msg.message);
+    }
+  };
+}
+
+// ---------- frames ----------
+function sendFrame() {
+  const v = $("src");
+  if (!ws || ws.readyState !== 1 || ws.bufferedAmount > 256 * 1024 || v.readyState < 2 || v.paused) return;
+  const c = $("cv");
+  c.width = WIDTH; c.height = Math.round((v.videoHeight / v.videoWidth) * WIDTH);
+  c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+  const t = replay ? v.currentTime : (performance.now() - t0) / 1000;   // replay: same clock as the recording's labels
+  c.toBlob(async (blob) => {
+    const header = new ArrayBuffer(8);
+    new DataView(header).setFloat64(0, t, true);
+    ws.send(new Blob([header, blob]));
+  }, "image/jpeg", 0.8);
+}
+
+async function start(srcUrl) {
+  const v = $("src");
+  if (srcUrl) {
+    replay = true; v.srcObject = null; v.src = srcUrl; v.loop = false;
+  } else {
+    replay = false;
+    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+  }
+  await v.play();
+  t0 = performance.now();
+  if (!ws || ws.readyState > 1) connect();
+  clearInterval(timer);
+  timer = setInterval(sendFrame, 1000 / FPS);
+}
+
+$("start").onclick = () => start().catch((e) => caption("error", `Camera: ${e.message}`));
+$("file").onchange = () => $("file").files[0] && start(URL.createObjectURL($("file").files[0]));
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.code === "Space") { e.preventDefault(); clearStop(); }
+  if (e.key === "n" && ws?.readyState === 1) ws.send(JSON.stringify({ cmd: "advance" }));
+  if (e.key === "r" && ws?.readyState === 1) { speechSynthesis.cancel(); ws.send(JSON.stringify({ cmd: "reset" })); }
+});
+
+if (!pid) caption("setup", "Open this page with ?id=<procedure id> (approve the procedure in the Author view first).");
+// ?src=/files/<id>/<run>.mp4 replays a recording already on the server (the demo's fallback). Same-origin only.
+const src = params.get("src");
+if (pid && src && src.startsWith("/files/")) { $("start").textContent = "Start replay"; $("start").onclick = () => start(src); }
+</script>
+</body>
+</html>

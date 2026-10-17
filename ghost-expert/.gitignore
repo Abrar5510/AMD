@@ -4,3 +4,5 @@ __pycache__/
 .venv/
 eval/runs/
 procedures/*/expert.mp4
+procedures/*/frames.npz
+procedures/*/draft.json
