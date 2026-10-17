@@ -4,98 +4,213 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ghost Expert · Author</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f2c230'/%3E%3Cpath d='M10 22V12a6 6 0 0 1 12 0v10l-2-2-2 2-2-2-2 2-2-2z' fill='%23111'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1114; --panel: #171a1f; --line: #2a2f37; --text: #e8eaed; --muted: #8b93a1;
-    --accent: #ffd200; --danger: #ff4d4f; --ok: #3ecf8e; --band-a: #2b3a55; --band-b: #34465f;
+    --bg: #0c0d0f; --surface: #15161a; --surface-2: #1c1d22; --line: rgba(255,255,255,.07); --line-2: rgba(255,255,255,.13);
+    --text: #edece8; --muted: #9a9892; --faint: #5f5e5a;
+    --accent: #f2c230; --stop: #e5484d; --ok: #4cc38a; --band-a: #24262c; --band-b: #2c2e35;
+    --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "Geist Mono", ui-monospace, Menlo, monospace;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  header { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 14px 20px; border-bottom: 1px solid var(--line); }
-  header h1 { font-size: 16px; margin: 0 12px 0 0; letter-spacing: .02em; }
-  header h1 span { color: var(--accent); }
+  html { background: var(--bg); }
+  body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--text); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
   input, textarea, button { font: inherit; color: inherit; }
-  input[type=text], input[type=number], textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; }
-  input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-  textarea { resize: vertical; min-height: 38px; }
-  button { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
-  button:hover { border-color: var(--muted); }
-  button.primary { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 600; }
-  button:disabled { opacity: .5; cursor: default; }
-  #status { color: var(--muted); }
-  #status.err { color: var(--danger); }
-  main { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; padding: 20px; }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-  .stage { position: sticky; top: 12px; align-self: start; }
-  video { width: 100%; background: #000; border-radius: 8px; display: block; }
-  #timeline { position: relative; height: 44px; margin-top: 10px; background: var(--panel); border-radius: 6px; overflow: hidden; cursor: pointer; }
-  .band { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; border-right: 1px solid var(--bg); }
-  .band.crit { box-shadow: inset 0 3px 0 var(--danger); }
-  .band.sel { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .cp { position: absolute; top: 0; height: 8px; width: 2px; background: var(--accent); opacity: .7; }
-  #playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; pointer-events: none; }
-  .meta { color: var(--muted); margin-top: 8px; font-size: 12px; }
-  #steps { display: flex; flex-direction: column; gap: 12px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; grid-template-columns: 96px 1fr; gap: 12px; }
-  .card.sel { border-color: var(--accent); }
-  .card.crit { border-left: 3px solid var(--danger); }
-  .thumb { width: 96px; height: 72px; object-fit: cover; border-radius: 4px; background: #000; }
-  .num { font-size: 22px; font-weight: 700; color: var(--accent); }
-  .fields { display: grid; gap: 6px; }
-  .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .row input[type=number] { width: 80px; }
-  label.small { font-size: 12px; color: var(--muted); }
-  .said { font-size: 12px; color: var(--muted); font-style: italic; }
-  footer { position: sticky; bottom: 0; display: flex; gap: 12px; align-items: center; padding: 12px 20px; background: var(--panel); border-top: 1px solid var(--line); }
-  #edits { color: var(--muted); }
-  .grow { flex: 1; }
-  .badge { padding: 2px 8px; border-radius: 99px; font-size: 12px; background: var(--line); }
-  .badge.ok { background: var(--ok); color: #111; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  a { color: inherit; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); background: transparent; border-radius: 999px;
+         padding: 7px 14px; font-weight: 500; transition: background .2s, border-color .2s, transform .1s; white-space: nowrap; }
+  .btn:hover:not(:disabled) { background: var(--surface-2); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #141210; font-weight: 600; }
+  .btn.primary:hover:not(:disabled) { background: #f6cf52; }
+  .btn.big { padding: 12px 22px; font-size: 15px; }
+  .tool { border: 0; background: none; color: var(--muted); padding: 6px 8px; border-radius: 6px; font-size: 13px; transition: background .2s, color .2s; }
+  .tool:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+  .tool:disabled { opacity: .35; cursor: default; }
+  .tool.danger:hover { color: #ff8589; }
+
+  .mark { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; text-decoration: none; }
+  .mark i { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); display: grid; place-items: center; }
+  .mark i::after { content: ""; width: 10px; height: 12px; background: #141210; border-radius: 5px 5px 1px 1px;
+                   clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 85%, 50% 100%, 25% 85%, 0 100%); }
+  .eyebrow { font: 500 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
+  .field-label { display: block; font: 500 11px var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--faint); margin: 0 0 6px; }
+  input[type=text], input[type=number], textarea { width: 100%; background: var(--bg); border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 11px;
+         transition: border-color .2s; }
+  input[type=text]:hover, textarea:hover { border-color: rgba(255,255,255,.2); }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 44px; }
+  input::placeholder, textarea::placeholder { color: var(--faint); }
+
+  /* toast: one place for every status line */
+  #status { position: fixed; z-index: 5; left: 50%; bottom: 84px; transform: translateX(-50%); max-width: calc(100% - 32px);
+            padding: 10px 16px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line-2); box-shadow: 0 8px 30px rgba(0,0,0,.4);
+            font-size: 13px; transition: opacity .25s; }
+  #status:empty { opacity: 0; pointer-events: none; }
+  #status.err { color: #ff8589; }
+
+  /* ---------- start: new or existing ---------- */
+  #start { min-height: 100dvh; display: grid; place-items: center; padding: 32px 16px; }
+  body:not([data-phase="start"]) #start { display: none; }
+  .start { width: min(500px, 100%); }
+  .start .mark { margin-bottom: 56px; color: var(--muted); }
+  .start h1 { font-size: clamp(30px, 5vw, 40px); line-height: 1.1; letter-spacing: -.03em; font-weight: 600; margin: 10px 0 12px; text-wrap: balance; }
+  .start .lede { color: var(--muted); margin: 0 0 36px; max-width: 52ch; font-size: 15px; }
+  .form { display: grid; gap: 18px; }
+  .drop { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px dashed var(--line-2); border-radius: 12px; cursor: pointer; transition: border-color .2s, background .2s; }
+  .drop:hover, .drop.over { border-color: var(--accent); background: rgba(242,194,48,.04); }
+  .drop svg { width: 22px; height: 22px; color: var(--muted); flex-shrink: 0; }
+  .drop b { display: block; font-weight: 500; }
+  .drop span { color: var(--muted); font-size: 13px; }
+  #file { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .existing { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--line); }
+  #pidlist { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  #pidlist .btn { font: 500 13px var(--mono); padding: 6px 12px; }
+
+  /* ---------- editor ---------- */
+  #editor { display: none; }
+  body[data-phase="edit"] #editor { display: block; }
+  .top { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 16px; padding: 12px 24px;
+         background: rgba(12,13,15,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .top .sep { width: 1px; height: 18px; background: var(--line-2); flex-shrink: 0; }
+  #title { flex: 1; min-width: 0; font-size: 17px; font-weight: 600; letter-spacing: -.015em; border-color: transparent; background: transparent; padding: 6px 10px; }
+  #state { font: 500 12px var(--mono); color: var(--muted); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  #state::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  #state.ok::before { background: var(--ok); }
+  #edits { font: 500 12px var(--mono); color: var(--faint); white-space: nowrap; }
+  #coachlink { display: none; }
+  #coachlink.on { display: inline-flex; }
+
+  main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 32px; padding: 24px; max-width: 1600px; margin: 0 auto; }
+  .stage { position: sticky; top: 82px; align-self: start; }
+  video { width: 100%; aspect-ratio: 16 / 9; background: #050506; border-radius: 14px; display: block; }
+  #timeline { position: relative; height: 40px; margin-top: 14px; background: var(--surface); border-radius: 8px; overflow: hidden; cursor: pointer; }
+  .band { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font: 500 12px var(--mono); color: var(--muted);
+          border-right: 1px solid var(--bg); transition: background .2s, color .2s; }
+  .band.crit { box-shadow: inset 0 3px 0 var(--stop); }
+  .band.sel { background: rgba(242,194,48,.16) !important; color: var(--accent); }
+  .cp { position: absolute; bottom: 0; height: 6px; width: 1px; background: var(--muted); opacity: .5; }
+  #playhead { position: absolute; z-index: 1; top: 0; bottom: 0; width: 2px; background: var(--text); pointer-events: none; }
+  #meta { color: var(--faint); margin-top: 12px; font: 12px/1.5 var(--mono); }
+
+  .list-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .list-head h2 { margin: 0; font-size: 15px; font-weight: 600; }
+  .list-head span { color: var(--faint); font-size: 13px; }
+  #steps { display: flex; flex-direction: column; gap: 6px; padding-bottom: 40px; }
+  .card { background: var(--surface); border-radius: 12px; transition: background .2s, box-shadow .2s; }
+  .card:not(.sel):hover { background: var(--surface-2); cursor: pointer; }
+  .card.sel { box-shadow: inset 0 0 0 1px var(--line-2); }
+  .card-head { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; }
+  .num { font: 500 13px var(--mono); color: var(--faint); }
+  .card.sel .num { color: var(--accent); }
+  .card-head .t { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-head .t.empty { color: var(--faint); font-style: italic; }
+  .card-head .when { font: 12px var(--mono); color: var(--faint); display: inline-flex; gap: 10px; align-items: center; }
+  .flag { color: #ff8589; font: 500 11px var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+  .card-body { display: none; padding: 0 16px 16px 58px; }
+  .card.sel .card-body { display: grid; gap: 16px; }
+  .card.sel .card-head .t { white-space: normal; }
+  .thumbrow { display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 14px; align-items: start; }
+  .thumb { width: 148px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: #050506; display: block; }
+  .said { font-size: 13px; color: var(--muted); font-style: italic; border-left: 2px solid var(--line-2); padding-left: 10px; }
+  .switch { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--muted); }
+  .switch input { appearance: none; -webkit-appearance: none; width: 30px; height: 18px; border-radius: 999px; background: var(--surface-2);
+                  border: 1px solid var(--line-2); position: relative; flex-shrink: 0; margin: 1px 0 0; cursor: pointer; transition: background .2s; }
+  .switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--muted); transition: transform .2s, background .2s; }
+  .switch input:checked { background: var(--stop); border-color: var(--stop); }
+  .switch input:checked::after { transform: translateX(12px); background: #fff; }
+  .switch b { color: var(--text); font-weight: 500; }
+  .clip { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .clip input[type=number] { width: 84px; font: 13px var(--mono); padding: 6px 8px; }
+  .clip .arrow { color: var(--faint); }
+  .tools { display: flex; gap: 2px; flex-wrap: wrap; margin: 0 -8px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .tools .gap { flex: 1; }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: minmax(0, 1fr); padding: 16px; gap: 20px; }
+    .stage { position: static; } .top { padding: 10px 16px; gap: 10px; flex-wrap: wrap; } .top .sep, #edits { display: none; }
+    #state { margin-left: auto; } #title { order: 1; flex-basis: 100%; padding: 4px 0; }
+    .card-body { padding-left: 16px; } .thumbrow { grid-template-columns: minmax(0, 1fr); }
+  }
 </style>
 </head>
-<body>
-<header>
-  <h1>Ghost <span>Expert</span> · Author</h1>
-  <input id="pid" type="text" list="pids" placeholder="procedure id, e.g. loto-filter" style="max-width:220px">
-  <datalist id="pids"></datalist>
-  <button id="open">Open</button>
-  <input id="file" type="file" accept="video/*" style="max-width:240px">
-  <button id="draft" class="primary">Upload &amp; draft</button>
-  <span id="status"></span>
-</header>
+<body data-phase="start">
 
-<main>
-  <section class="stage">
-    <video id="video" controls playsinline></video>
-    <div id="timeline"><div id="playhead"></div></div>
-    <div class="meta" id="meta"></div>
-  </section>
-  <section>
-    <input id="title" type="text" placeholder="Procedure title" style="font-size:18px;font-weight:600;margin-bottom:12px">
-    <div id="steps"></div>
-  </section>
-</main>
+<section id="start">
+  <div class="start">
+    <div class="mark"><i></i>Ghost Expert</div>
+    <div class="eyebrow">Author a procedure</div>
+    <h1>Film it once. Ghost Expert writes the steps.</h1>
+    <p class="lede">Upload a narrated video of the expert doing the job. Whisper, SigLIP and Gemma on the AMD GPU turn it into steps you can check and approve.</p>
+    <div class="form">
+      <div>
+        <label class="field-label" for="pid">Procedure id</label>
+        <input id="pid" type="text" list="pids" placeholder="loto-filter" autocomplete="off" spellcheck="false">
+        <datalist id="pids"></datalist>
+      </div>
+      <label class="drop" for="file" id="drop">
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M251.77 73a8 8 0 0 0-8.21.39L208 97.05V72a16 16 0 0 0-16-16H32a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-25l35.56 23.71A8 8 0 0 0 248 184a8 8 0 0 0 8-8V80a8 8 0 0 0-4.23-7ZM192 184H32V72h160Zm48-22.95-32-21.33v-23.44l32-21.33Z"/></svg>
+        <div><b id="filename">Choose the expert video</b><span>Narrate as you go: “First…”, “Next…”, “Finally…”</span></div>
+      </label>
+      <input id="file" type="file" accept="video/*">
+      <div><button id="draft" class="btn primary big">Upload and draft</button></div>
+    </div>
+    <div class="existing" id="existing" hidden>
+      <div class="eyebrow">Or open an existing draft</div>
+      <div id="pidlist"></div>
+    </div>
+  </div>
+</section>
 
-<footer>
-  <span id="state" class="badge">no draft</span>
-  <span id="edits">Expert edits: 0</span>
-  <span class="grow"></span>
-  <button id="approve" class="primary" disabled>Approve procedure</button>
-</footer>
+<div id="editor">
+  <header class="top">
+    <a class="mark" id="home" href="./" title="All procedures"><i></i></a>
+    <span class="sep"></span>
+    <input id="title" type="text" placeholder="Procedure title" aria-label="Procedure title">
+    <span id="state">no draft</span>
+    <span id="edits">0 edits</span>
+    <a id="coachlink" class="btn" href="#">Open coach →</a>
+    <button id="approve" class="btn primary" disabled>Approve</button>
+  </header>
+  <main>
+    <section class="stage">
+      <video id="video" controls playsinline></video>
+      <div id="timeline" title="Click to seek"><div id="playhead"></div></div>
+      <div id="meta"></div>
+    </section>
+    <section>
+      <div class="list-head"><h2>Steps</h2><span>Select a step to edit it</span></div>
+      <div id="steps"></div>
+    </section>
+  </main>
+</div>
+
+<div id="status" role="status" aria-live="polite"></div>
 
 <script>
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const token = params.get("token");
 let pid = params.get("id") || "";
-let draft = null, selected = null, saveTimer = null, clipEnd = null;
+let draft = null, selected = null, saveTimer = null, clipEnd = null, statusTimer = null;
 
 function el(tag, props = {}, ...kids) {
   const n = Object.assign(document.createElement(tag), props);
   for (const k of kids) n.append(k);
   return n;
 }
-function status(text, err = false) { $("status").textContent = text; $("status").className = err ? "err" : ""; }
+function status(text, err = false) {
+  $("status").textContent = text; $("status").className = err ? "err" : "";
+  clearTimeout(statusTimer);
+  if (text && !err && !text.includes("…")) statusTimer = setTimeout(() => status(""), 3500);
+}
 async function api(path, opts = {}) {
   const headers = { ...(opts.headers || {}) };
   if (token) headers["X-App-Token"] = token;
@@ -105,26 +220,36 @@ async function api(path, opts = {}) {
   return body;
 }
 const fmt = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, "0")}`;
+const tq = token ? `token=${encodeURIComponent(token)}` : "";
+$("home").href = `./${tq ? `?${tq}` : ""}`;
 
 async function listIds() {
   try {
     const ids = await api("/api/procedures");
     $("pids").replaceChildren(...ids.map((i) => el("option", { value: i })));
+    $("pidlist").replaceChildren(...ids.map((i) => el("button", { className: "btn", textContent: i, onclick: () => open(i) })));
+    $("existing").hidden = !ids.length;
   } catch { /* list is a convenience */ }
 }
 
 async function open(id) {
   pid = id; $("pid").value = id;
-  history.replaceState(null, "", `?id=${encodeURIComponent(id)}${token ? `&token=${encodeURIComponent(token)}` : ""}`);
   try {
     draft = await api(`/api/procedures/${id}/draft`);
+    history.replaceState(null, "", `?id=${encodeURIComponent(id)}${tq ? `&${tq}` : ""}`);
     $("video").src = `/files/${id}/expert.mp4`;
+    selected = null;
+    document.body.dataset.phase = "edit";
     render();
     status("");
   } catch (e) { status(e.message, true); }
 }
 
-$("open").onclick = () => $("pid").value && open($("pid").value.trim());
+$("pid").onkeydown = (e) => { if (e.key === "Enter" && !$("file").files[0] && e.target.value.trim()) open(e.target.value.trim()); };
+$("file").onchange = () => { const f = $("file").files[0]; $("filename").textContent = f ? f.name : "Choose the expert video"; };
+for (const ev of ["dragenter", "dragover"]) $("drop").addEventListener(ev, (e) => { e.preventDefault(); $("drop").classList.add("over"); });
+for (const ev of ["dragleave", "drop"]) $("drop").addEventListener(ev, () => $("drop").classList.remove("over"));
+$("drop").addEventListener("drop", (e) => { e.preventDefault(); if (e.dataTransfer.files[0]) { $("file").files = e.dataTransfer.files; $("file").onchange(); } });
 
 $("draft").onclick = async () => {
   const id = $("pid").value.trim(), file = $("file").files[0];
@@ -164,10 +289,12 @@ $("approve").onclick = async () => {
   clearTimeout(saveTimer);
   await save();
   try {
+    $("approve").disabled = true;
+    status("Approving: building keyframes and coach references…");
     const proc = await api(`/api/procedures/${pid}/approve`, { method: "POST" });
     await open(pid);
-    status(`Approved: ${proc.steps.length} steps, coach references built.`);
-  } catch (e) { status(e.message, true); }
+    status(`Approved: ${proc.steps.length} steps. The coach is ready.`);
+  } catch (e) { status(e.message, true); $("approve").disabled = false; }
 };
 
 $("title").onchange = (e) => { draft.title = e.target.value; edited(); };
@@ -178,13 +305,16 @@ function said(step) {
 }
 
 function renderChrome() {
-  $("edits").textContent = `Expert edits: ${draft.edits}`;
+  $("edits").textContent = `${draft.edits} expert edit${draft.edits === 1 ? "" : "s"}`;
   $("state").textContent = draft.approved ? "approved" : "draft";
-  $("state").className = "badge" + (draft.approved ? " ok" : "");
-  $("approve").disabled = false;
+  $("state").className = draft.approved ? "ok" : "";
+  $("approve").disabled = !!draft.approved;
+  $("approve").textContent = draft.approved ? "Approved" : "Approve";
+  $("coachlink").classList.toggle("on", !!draft.approved);
+  $("coachlink").href = `coach?id=${encodeURIComponent(pid)}${tq ? `&${tq}` : ""}`;
   const t = draft.timings || {};
   $("meta").textContent = `${draft.steps.length} steps from ${draft.segments?.length ?? "?"} segments · ` +
-    `drafted in ${t.total_s ?? "?"}s (SigLIP ${t.siglip_s ?? "?"}s · Whisper ${t.whisper_s ?? "?"}s · Gemma ${t.gemma_s ?? "?"}s)`;
+    `drafted in ${t.total_s ?? "?"} s (SigLIP ${t.siglip_s ?? "?"} · Whisper ${t.whisper_s ?? "?"} · Gemma ${t.gemma_s ?? "?"})`;
   renderTimeline();
 }
 
@@ -223,64 +353,78 @@ function render() {
 function card(s, i) {
   const field = (key, tag = "input", placeholder = "") => {
     const n = el(tag, { value: s[key] ?? "", placeholder, ...(tag === "input" ? { type: "text" } : { rows: 2 }) });
-    n.onchange = () => { s[key] = n.value; edited(); };
+    n.onchange = () => {
+      s[key] = n.value;
+      if (key === "title") Object.assign(c.querySelector(".card-head .t"), { textContent: n.value || "Untitled step", className: "t" + (n.value ? "" : " empty") });
+      edited();
+    };
     return n;
   };
+  const labelled = (label, node) => el("div", {}, el("label", { className: "field-label", textContent: label }), node);
   const time = (idx) => {
-    const n = el("input", { type: "number", step: 0.1, min: 0, value: s.expert_clip[idx] });
+    const n = el("input", { type: "number", step: 0.1, min: 0, value: s.expert_clip[idx], ariaLabel: idx ? "Clip end (s)" : "Clip start (s)" });
     n.onchange = () => { s.expert_clip[idx] = Math.round(parseFloat(n.value) * 10) / 10; edited(true); };
     return n;
   };
   const setHere = (idx) => el("button", {
-    textContent: idx ? "end ⟵ playhead" : "start ⟵ playhead",
+    className: "tool", textContent: idx ? "Set end to playhead" : "Set start to playhead",
     onclick: () => { s.expert_clip[idx] = Math.round($("video").currentTime * 10) / 10; edited(true); },
   });
   const crit = el("input", { type: "checkbox", checked: !!s.safety_critical });
   crit.onchange = () => { s.safety_critical = crit.checked; edited(true); };
 
-  const play = el("button", { textContent: "▶ clip", onclick: () => {
+  const play = el("button", { className: "tool", textContent: "▶ Play clip", onclick: () => {
     const v = $("video"); v.currentTime = s.expert_clip[0]; clipEnd = s.expert_clip[1]; v.play();
   } });
-  const split = el("button", { textContent: "split at playhead", onclick: () => {
+  const split = el("button", { className: "tool", textContent: "Split at playhead", onclick: () => {
     const t = Math.round($("video").currentTime * 10) / 10, [a, b] = s.expert_clip;
     if (!(t > a && t < b)) return status("Move the playhead inside this step to split it.", true);
     s.expert_clip = [a, t];
     draft.steps.splice(i + 1, 0, { title: "", instruction: "", visual_check: "", safety_critical: false, common_mistake: "", expert_clip: [t, b] });
     edited(true);
   } });
-  const merge = el("button", { textContent: "merge with next", disabled: i === draft.steps.length - 1, onclick: () => {
+  const merge = el("button", { className: "tool", textContent: "Merge with next", disabled: i === draft.steps.length - 1, onclick: () => {
     const next = draft.steps[i + 1];
     s.expert_clip = [s.expert_clip[0], next.expert_clip[1]];
     s.safety_critical = s.safety_critical || next.safety_critical;
     draft.steps.splice(i + 1, 1);
     edited(true);
   } });
-  const del = el("button", { textContent: "delete", onclick: () => { draft.steps.splice(i, 1); edited(true); } });
+  const del = el("button", { className: "tool danger", textContent: "Delete", onclick: () => {
+    draft.steps.splice(i, 1);
+    selected = null;
+    edited(true);
+  } });
 
-  const thumb = el("img", { className: "thumb", alt: "" });
+  const thumb = el("img", { className: "thumb", alt: `Expert keyframe for step ${i + 1}` });
   if (s.keyframe) thumb.src = `/files/${pid}/${s.keyframe}?v=${draft.edits}`;
   const words = said(s);
 
-  const c = el("div", { className: "card" + (s.safety_critical ? " crit" : "") + (selected === i ? " sel" : "") },
-    el("div", {}, el("div", { className: "num", textContent: i + 1 }), thumb),
-    el("div", { className: "fields" },
-      field("title", "input", "Step title"),
-      field("instruction", "textarea", "What the trainee does"),
-      el("label", { className: "small", textContent: "Visual check: what the camera sees when it's done" }),
-      field("visual_check", "textarea", "e.g. a yellow tag hangs on the red lockout box"),
-      field("common_mistake", "input", "Common mistake (optional)"),
-      el("label", { className: "small" }, crit, " ⚠ safety-critical: skipping it interrupts the trainee"),
-      el("div", { className: "row" },
-        el("span", { className: "small", textContent: "Expert clip (s)" }),
-        time(0), el("span", { className: "small", textContent: "→" }), time(1),
-        el("span", { className: "small", textContent: `${fmt(s.expert_clip[0])}–${fmt(s.expert_clip[1])}` })),
-      el("div", { className: "row" }, play, setHere(0), setHere(1), split, merge, del),
-      words ? el("div", { className: "said", textContent: `“${words}”` }) : ""));
+  const c = el("article", { className: "card" + (selected === i ? " sel" : "") },
+    el("div", { className: "card-head" },
+      el("span", { className: "num", textContent: String(i + 1).padStart(2, "0") }),
+      el("span", { className: "t" + (s.title ? "" : " empty"), textContent: s.title || "Untitled step" }),
+      el("span", { className: "when" },
+        s.safety_critical ? el("span", { className: "flag", textContent: "Safety" }) : "",
+        `${fmt(s.expert_clip[0])}–${fmt(s.expert_clip[1])}`)),
+    el("div", { className: "card-body" },
+      labelled("Title", field("title", "input", "Step title")),
+      el("div", { className: "thumbrow" }, s.keyframe ? thumb : "",
+        labelled("Instruction", field("instruction", "textarea", "What the trainee does"))),
+      labelled("Done when: what the camera sees", field("visual_check", "textarea", "e.g. a yellow tag hangs on the red lockout box")),
+      labelled("Common mistake (optional)", field("common_mistake", "input", "e.g. opening the cover without testing the switch")),
+      el("label", { className: "switch" }, crit,
+        el("span", {}, el("b", { textContent: "Safety-critical. " }), "Skipping it stops the trainee instead of giving a hint.")),
+      el("div", {}, el("span", { className: "field-label", textContent: "Expert clip (seconds)" }),
+        el("div", { className: "clip" }, time(0), el("span", { className: "arrow", textContent: "→" }), time(1))),
+      words ? el("div", { className: "said", textContent: `“${words}”` }) : "",
+      el("div", { className: "tools" }, play, setHere(0), setHere(1), el("span", { className: "gap" }), split, merge, del)));
   c.onclick = () => {
     if (selected === i) return;
     selected = i;
     document.querySelectorAll(".card").forEach((n, k) => n.classList.toggle("sel", k === i));
     renderTimeline();
+    if ($("video").paused) $("video").currentTime = s.expert_clip[0];
   };
   return c;
 }

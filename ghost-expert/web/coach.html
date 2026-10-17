@@ -4,144 +4,252 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ghost Expert · Coach</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f2c230'/%3E%3Cpath d='M10 22V12a6 6 0 0 1 12 0v10l-2-2-2 2-2-2-2 2-2-2z' fill='%23111'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1114; --panel: #171a1f; --line: #2a2f37; --text: #e8eaed; --muted: #8b93a1;
-    --accent: #ffd200; --danger: #ff3b3b; --warn: #ff9f1a; --ok: #3ecf8e; --info: #5aa9ff;
+    --bg: #0c0d0f; --surface: #15161a; --surface-2: #1c1d22; --line: rgba(255,255,255,.07); --line-2: rgba(255,255,255,.13);
+    --text: #edece8; --muted: #9a9892; --faint: #5f5e5a;
+    --accent: #f2c230; --stop: #e5484d; --ok: #4cc38a;
+    --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+    --r-lg: 14px; --r-md: 10px; --r-sm: 6px;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
-         display: grid; grid-template-rows: auto auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
-  input, button, select { font: inherit; color: inherit; }
-  button, select { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
-  button.primary { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 600; }
-  button:disabled, select:disabled { opacity: .5; cursor: default; }
-  header { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--line); }
-  header h1 { font-size: 16px; margin: 0; }
-  header h1 span { color: var(--accent); }
-  #ptitle { color: var(--muted); }
-  .grow { flex: 1; }
-  #conn { font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--line); }
-  #conn.on { background: var(--ok); color: #111; }
-  #rail { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; scrollbar-width: thin; }
-  .chip { flex: 1 0 120px; min-width: 0; padding: 8px 10px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line);
-          font-size: 13px; transition: background .2s, border-color .2s; }
-  .chip b { display: block; font-size: 12px; color: var(--muted); }
-  .chip .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-  .chip.crit b::after { content: " ⚠"; color: var(--danger); }
-  .chip.done { background: #15301f; border-color: var(--ok); }
-  .chip.done b::before { content: "✓ "; color: var(--ok); }
-  .chip.cur { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-  .chip.cur b::before { content: "● "; color: var(--accent); }
-  .chip.skipped { border-color: var(--danger); background: #3a1414; }
-  main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; padding: 0 20px 16px; min-height: 0; }
-  .pane { position: relative; background: #000; border-radius: 10px; overflow: hidden; border: 3px solid transparent; min-height: 240px;
-          display: flex; align-items: center; justify-content: center; transition: border-color .15s; }
-  .pane video, .pane img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  @media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } .pane { aspect-ratio: 16 / 9; min-height: 0; } }
-  .label { position: absolute; top: 10px; left: 10px; font-size: 12px; padding: 3px 8px; border-radius: 4px; background: rgba(0,0,0,.6); }
-  #live.stop { border-color: var(--danger); }
-  #live.ask { border-color: var(--warn); }
-  #banner { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 18px; font-size: 20px; font-weight: 700;
-            background: var(--danger); color: #fff; display: none; }
-  #live.stop #banner { display: block; }
-  #live.stop::after { content: ""; position: absolute; inset: 0; background: rgba(255, 40, 40, .18); pointer-events: none;
-                      animation: pulse 1s ease-in-out infinite alternate; }
-  @keyframes pulse { from { opacity: .4; } to { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { #live.stop::after { animation: none; } }
-  .side { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; min-height: 0; }
-  #expert.stop { border-color: var(--danger); }
-  #expert.show { border-color: var(--info); }
-  #instr { background: var(--panel); border-radius: 10px; padding: 12px 14px; }
-  #instr h2 { margin: 0 0 4px; font-size: 18px; }
-  #instr p { margin: 4px 0; color: var(--muted); }
-  footer { display: flex; gap: 12px 16px; align-items: center; flex-wrap: wrap; padding: 10px 20px; background: var(--panel); border-top: 1px solid var(--line); }
-  #caption { font-size: 17px; flex: 1 1 300px; }
-  #caption .k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 2px 6px; border-radius: 4px; margin-right: 8px; background: var(--line); }
-  #caption .k.interrupt { background: var(--danger); color: #fff; }
-  #caption .k.hint, #caption .k.ask { background: var(--warn); color: #111; }
-  #caption .k.done, #caption .k.complete, #caption .k.override { background: var(--ok); color: #111; }
-  #caption .k.answer, #caption .k.question { background: var(--info); color: #111; }
-  #askbox { display: flex; gap: 6px; align-items: center; }
-  #talk { user-select: none; touch-action: none; }
-  #talk.rec { background: var(--danger); border-color: var(--danger); color: #fff; }
-  #typed { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 220px; max-width: 45vw; }
-  #bench { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
-  #bench b { color: var(--text); font-weight: 600; }
-  .keys { font-size: 12px; color: var(--muted); }
-  kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font: 11px ui-monospace, monospace; }
+  html { background: var(--bg); }
+  body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--text); font: 15px/1.5 var(--sans);
+         -webkit-font-smoothing: antialiased; }
+  input, button { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  kbd { font: 500 11px var(--mono); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line-2); color: var(--muted); }
 
-  /* session report: the training manager's screen, printable to PDF */
-  #report { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: flex-start; justify-content: center;
-            padding: 40px 16px; overflow-y: auto; z-index: 10; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); background: transparent; border-radius: 999px; white-space: nowrap;
+         padding: 7px 14px; font-weight: 500; font-size: 14px; transition: background .2s, border-color .2s, transform .1s; }
+  .btn:hover:not(:disabled) { background: var(--surface-2); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #141210; font-weight: 600; padding: 12px 22px; font-size: 15px; }
+  .btn.primary:hover:not(:disabled) { background: #f6cf52; }
+
+  .mark { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+  .mark i { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); display: grid; place-items: center; }
+  .mark i::after { content: ""; width: 10px; height: 12px; background: #141210; border-radius: 5px 5px 1px 1px;
+                   clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 85%, 50% 100%, 25% 85%, 0 100%); }
+
+  /* ---------- setup: one decision on screen ---------- */
+  #setup { min-height: 100dvh; display: grid; place-items: center; padding: 32px 16px; }
+  body:not([data-phase="setup"]) #setup { display: none; }
+  .setup { width: min(460px, 100%); }
+  .setup .mark { margin-bottom: 56px; color: var(--muted); }
+  .eyebrow { font: 500 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
+  .setup h1 { font-size: clamp(30px, 5vw, 40px); line-height: 1.1; letter-spacing: -.03em; font-weight: 600; margin: 10px 0 12px; text-wrap: balance; }
+  .setup .facts { color: var(--muted); margin: 0 0 36px; }
+  .setup .facts b { color: var(--text); font-weight: 500; }
+  .seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); margin-bottom: 28px; }
+  .seg label { position: relative; padding: 6px 16px; border-radius: 999px; font-size: 14px; color: var(--muted); cursor: pointer; transition: color .2s, background .2s; }
+  .seg input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .seg label:has(input:checked) { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line-2); }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .go { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .link { color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); cursor: pointer; }
+  .link:hover { color: var(--text); }
+  #file { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  #note { min-height: 22px; margin-top: 22px; font-size: 14px; color: var(--muted); }
+  #note.err { color: var(--stop); }
+
+  /* ---------- live ---------- */
+  #app { height: 100dvh; display: none; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); }
+  body[data-phase="live"] #app { display: grid; }
+  .top { display: flex; align-items: center; gap: 16px; padding: 14px 24px; }
+  .top .sep { width: 1px; height: 18px; background: var(--line-2); }
+  #ptitle { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .grow { flex: 1; }
+  #conn { display: inline-flex; align-items: center; gap: 8px; font: 500 12px var(--mono); color: var(--muted); }
+  #conn::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+  #conn.on::before { background: var(--ok); box-shadow: 0 0 0 3px rgba(76,195,138,.18); }
+
+  #rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; padding: 0 24px 18px; }
+  .chip { min-width: 0; font-size: 12px; color: var(--faint); transition: color .3s; }
+  .chip i { display: block; height: 4px; border-radius: 2px; background: var(--surface-2); margin-bottom: 8px; transition: background .3s; }
+  .chip .n { font: 500 11px var(--mono); margin-right: 6px; }
+  .chip .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; margin-top: 2px; }
+  .chip.crit .n::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 5px; vertical-align: 1px;
+                         background: var(--stop); clip-path: polygon(50% 0, 100% 100%, 0 100%); opacity: .8; }
+  .chip.done { color: var(--muted); }
+  .chip.done i { background: var(--ok); opacity: .55; }
+  .chip.cur { color: var(--text); }
+  .chip.cur i { background: var(--accent); }
+  .chip.skipped { color: var(--stop); }
+  .chip.skipped i { background: var(--stop); }
+  @media (max-width: 1100px) { .chip .t { display: none; } }
+
+  main { display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 30vw, 420px); gap: 20px; padding: 0 24px 16px; min-height: 0; }
+  .pane { position: relative; background: #050506; border-radius: var(--r-lg); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .pane video, .pane img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .pane::before { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; z-index: 2; transition: box-shadow .2s; }
+  .tag { position: absolute; z-index: 3; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 7px; font: 500 11px var(--mono);
+         letter-spacing: .04em; text-transform: uppercase; padding: 5px 9px; border-radius: var(--r-sm); background: rgba(12,13,15,.72);
+         backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--text); }
+  #livetag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--stop); }
+  #live.replay #livetag::before { background: var(--muted); }
+
+  /* the coach's voice, as a subtitle */
+  #caption { position: absolute; z-index: 3; left: 50%; bottom: 20px; transform: translateX(-50%); width: min(760px, calc(100% - 40px));
+             padding: 12px 18px; border-radius: var(--r-md); background: rgba(12,13,15,.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+             font-size: 17px; line-height: 1.45; text-wrap: pretty; transition: opacity .3s; }
+  #caption:empty { opacity: 0; }
+  #caption .k { display: block; font: 500 11px var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  #caption .k.interrupt { color: #ff8589; }
+  #caption .k.hint, #caption .k.ask, #caption .k.answer, #caption .k.question { color: var(--accent); }
+  #caption .k.done, #caption .k.complete, #caption .k.override { color: var(--ok); }
+  #caption .k.error { color: #ff8589; }
+
+  #banner { position: absolute; z-index: 3; top: 0; left: 0; right: 0; padding: 18px 22px; background: var(--stop); color: #fff;
+            font-size: 22px; font-weight: 600; letter-spacing: -.01em; display: none; }
+  #live.stop #banner { display: block; }
+  #live.stop #livetag { display: none; }
+  #live.stop::before { box-shadow: inset 0 0 0 4px var(--stop); }
+  #live.stop::after { content: ""; position: absolute; inset: 0; background: rgba(229,72,77,.16); pointer-events: none; animation: pulse 1s ease-in-out infinite alternate; }
+  #live.ask::before { box-shadow: inset 0 0 0 3px var(--accent); }
+  @keyframes pulse { from { opacity: .35; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { #live.stop::after { animation: none; } }
+
+  .side { display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow-y: auto; }
+  #instr { padding: 22px; background: var(--surface); border-radius: var(--r-lg); }
+  #instr .eyebrow { display: flex; gap: 10px; align-items: center; }
+  #instr .crit { color: #ff8589; }
+  #instr h2 { margin: 10px 0 10px; font-size: 26px; line-height: 1.15; letter-spacing: -.025em; font-weight: 600; text-wrap: balance; }
+  #instr p { margin: 0; color: var(--muted); max-width: 60ch; }
+  #instr .check { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; }
+  #instr .check span { display: block; font: 500 11px var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--faint); margin-bottom: 4px; }
+  .side.stop #instr { box-shadow: inset 3px 0 0 var(--stop); }
+  #expert { aspect-ratio: 16 / 10; flex-shrink: 0; }
+  #expert.stop::before { box-shadow: inset 0 0 0 3px var(--stop); }
+  #expert.show::before { box-shadow: inset 0 0 0 3px var(--accent); }
+
+  #askbox { display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); margin-top: auto; }
+  #talk { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 0; background: var(--surface-2); font-weight: 500; font-size: 14px;
+          user-select: none; touch-action: none; transition: background .2s; white-space: nowrap; }
+  #talk:hover { background: #26272d; }
+  #talk svg { width: 16px; height: 16px; }
+  #talk.rec { background: var(--stop); color: #fff; }
+  #typed { flex: 1; min-width: 0; background: none; border: 0; padding: 8px 10px; outline: none; font-size: 14px; }
+  #typed::placeholder { color: var(--faint); }
+
+  .status { display: flex; gap: 20px; align-items: center; padding: 10px 24px; border-top: 1px solid var(--line); font: 12px/1.4 var(--mono); color: var(--faint); }
+  #bench { display: flex; gap: 6px 18px; flex-wrap: wrap; flex: 1; }
+  #bench b { color: var(--muted); font-weight: 500; }
+  .keys { display: flex; gap: 12px; white-space: nowrap; }
+  @media (max-width: 1100px) { .keys { display: none; } }
+
+  @media (max-width: 860px) {
+    #app { height: auto; min-height: 100dvh; }
+    .top { padding: 12px 16px; } .top .sep, #ptitle { display: none; } #rail { padding: 0 16px 14px; } main { padding: 0 16px 16px; grid-template-columns: minmax(0, 1fr); }
+    #live { aspect-ratio: 16 / 10; } .side { overflow: visible; } .status { padding: 10px 16px; }
+    #banner { font-size: 17px; padding: 12px 16px; } #caption { font-size: 15px; bottom: 12px; }
+  }
+
+  /* ---------- training record: a document, printable to PDF ---------- */
+  #report { position: fixed; inset: 0; z-index: 10; background: rgba(5,5,6,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            display: none; align-items: flex-start; justify-content: center; padding: 48px 16px; overflow-y: auto; }
   #report.open { display: flex; }
-  .sheet { background: #fff; color: #15171a; width: min(820px, 100%); border-radius: 10px; padding: 28px 32px; }
-  .sheet h2 { margin: 0; font-size: 22px; }
-  .sheet .sub { color: #5d6470; margin: 4px 0 18px; }
-  .verdict { display: inline-block; padding: 6px 14px; border-radius: 6px; font-weight: 700; margin-bottom: 18px; }
-  .verdict.pass { background: #d7f5e6; color: #0b6b3f; }
-  .verdict.fail { background: #ffe0e0; color: #a01818; }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
-  .kpi { border: 1px solid #e3e6ea; border-radius: 8px; padding: 10px 12px; }
-  .kpi b { display: block; font-size: 22px; }
-  .kpi span { color: #5d6470; font-size: 12px; }
-  .sheet table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 18px; }
-  .sheet th, .sheet td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e3e6ea; vertical-align: top; }
-  .sheet th { font-size: 12px; color: #5d6470; font-weight: 600; }
+  .sheet { background: #fbfaf7; color: #17171a; width: min(820px, 100%); border-radius: 16px; padding: 40px 44px; font-size: 14px; }
+  .sheet .eyebrow { color: #7a776f; }
+  .sheet h2 { margin: 6px 0 4px; font-size: 28px; letter-spacing: -.03em; font-weight: 600; }
+  .sheet .sub { color: #6b6962; margin: 0 0 24px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; font-weight: 600; margin-bottom: 28px; }
+  .verdict::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .verdict.pass { background: #e1f4ea; color: #146c43; }
+  .verdict.fail { background: #fbe4e4; color: #a3262a; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom: 32px; border-top: 1px solid #e6e3dc; }
+  .kpi { padding: 16px 16px 0 0; }
+  .kpi b { display: block; font-size: 28px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .kpi span { color: #6b6962; font-size: 12px; }
+  .sheet table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+  .sheet th, .sheet td { text-align: left; padding: 9px 8px; border-bottom: 1px solid #ebe8e1; vertical-align: top; }
+  .sheet th { font: 500 11px var(--mono); letter-spacing: .04em; text-transform: uppercase; color: #8a877f; }
+  .sheet td:first-child { font-family: var(--mono); color: #6b6962; white-space: nowrap; }
   .sheet td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .sheet .bad { color: #a01818; font-weight: 600; }
-  .sheet h3 { font-size: 15px; margin: 6px 0 8px; }
-  .sheet ul { margin: 0 0 16px; padding-left: 18px; }
-  .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; }
-  .sheet .actions button { background: #f1f3f5; border-color: #d5d9de; color: #15171a; }
+  .sheet .bad { color: #a3262a; font-weight: 500; }
+  .sheet h3 { font-size: 15px; font-weight: 600; margin: 8px 0 8px; }
+  .sheet ul { margin: 0 0 22px; padding-left: 18px; }
+  .sheet p { color: #6b6962; margin: 0 0 22px; }
+  .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; padding-top: 8px; }
+  .sheet .actions .btn { border-color: #dcd9d1; color: #17171a; }
+  .sheet .actions .btn:hover { background: #f0eee8; }
+  .sheet .actions .btn.dark { background: #17171a; color: #fbfaf7; border-color: #17171a; }
+  @media (max-width: 600px) { .sheet { padding: 28px 20px; } }
   @media print {
     body > *:not(#report) { display: none !important; }
-    #report { position: static; display: block; background: none; padding: 0; }
+    #report { position: static; display: block; background: none; padding: 0; backdrop-filter: none; }
     .sheet { width: 100%; padding: 0; }
     .sheet .actions { display: none; }
   }
 </style>
 </head>
-<body>
-<header>
-  <h1>Ghost <span>Expert</span> · Coach</h1>
-  <span id="ptitle"></span>
-  <span class="grow"></span>
-  <select id="lang" title="Coaching language">
-    <option value="en">English</option>
-    <option value="it">Italiano</option>
-  </select>
-  <input id="file" type="file" accept="video/*" title="Replay a recorded run instead of the camera" style="max-width:220px">
-  <button id="start" class="primary">Start camera</button>
-  <button id="showReport" disabled>Report</button>
-  <span id="conn">offline</span>
-</header>
-<div id="rail"></div>
-<main>
-  <div id="live" class="pane">
-    <video id="src" autoplay muted playsinline></video>
-    <span class="label">Trainee · live</span>
-    <div id="banner"></div>
-  </div>
-  <div class="side">
-    <div id="expert" class="pane">
-      <img id="kf" alt="">
-      <video id="clip" muted playsinline style="display:none"></video>
-      <span class="label" id="elabel">Expert</span>
+<body data-phase="setup">
+
+<section id="setup">
+  <div class="setup">
+    <div class="mark"><i></i>Ghost Expert</div>
+    <div class="eyebrow">Live coaching</div>
+    <h1 id="stitle">Loading procedure…</h1>
+    <p class="facts" id="sfacts">Point the camera top-down at the work area.</p>
+    <div class="seg" role="radiogroup" aria-label="Coaching language">
+      <label><input type="radio" name="lang" value="en" checked>English</label>
+      <label><input type="radio" name="lang" value="it">Italiano</label>
     </div>
-    <div id="instr"><h2>Press Start</h2><p>Point the camera at the work area.</p></div>
+    <div class="go">
+      <button id="start" class="btn primary">Start camera</button>
+      <label class="link" for="file">or replay a recording</label>
+      <input id="file" type="file" accept="video/*">
+    </div>
+    <div id="note" role="status"></div>
   </div>
-</main>
-<footer>
-  <div id="caption"></div>
-  <div id="askbox">
-    <button id="talk" title="Hold to ask the expert (or hold Q)">🎤 Hold to ask</button>
-    <input id="typed" type="text" placeholder="…or type a question">
-  </div>
-  <div id="bench"></div>
-  <div class="keys"><kbd>Q</kbd> hold to ask · <kbd>Space</kbd> dismiss · <kbd>N</kbd> next · <kbd>R</kbd> reset</div>
-</footer>
-<div id="report" role="dialog" aria-modal="true" aria-label="Session report"></div>
+</section>
+
+<div id="app">
+  <header class="top">
+    <span class="mark"><i></i>Ghost Expert</span>
+    <span class="sep"></span>
+    <span id="ptitle"></span>
+    <span class="grow"></span>
+    <span id="conn">offline</span>
+    <button id="showReport" class="btn" disabled>Training record</button>
+  </header>
+  <nav id="rail" aria-label="Procedure steps"></nav>
+  <main>
+    <section id="live" class="pane" aria-label="Trainee camera">
+      <video id="src" autoplay muted playsinline></video>
+      <span class="tag" id="livetag">Live</span>
+      <div id="banner" role="alert"></div>
+      <div id="caption" aria-live="polite"></div>
+    </section>
+    <aside class="side" id="side">
+      <div id="instr"></div>
+      <div id="expert" class="pane">
+        <img id="kf" alt="The expert doing the current step">
+        <video id="clip" muted playsinline style="display:none"></video>
+        <span class="tag" id="elabel">Expert</span>
+      </div>
+      <div id="askbox">
+        <button id="talk" title="Hold to ask the expert (or hold Q)">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128 176a48 48 0 0 0 48-48V64a48 48 0 0 0-96 0v64a48 48 0 0 0 48 48ZM96 64a32 32 0 0 1 64 0v64a32 32 0 0 1-64 0Zm40 143.6V232a8 8 0 0 1-16 0v-24.4A80.1 80.1 0 0 1 48 128a8 8 0 0 1 16 0 64 64 0 0 0 128 0 8 8 0 0 1 16 0 80.1 80.1 0 0 1-72 79.6Z"/></svg>
+          Hold to ask
+        </button>
+        <input id="typed" type="text" placeholder="or type a question" aria-label="Ask the expert">
+      </div>
+    </aside>
+  </main>
+  <footer class="status">
+    <div id="bench"></div>
+    <div class="keys"><span><kbd>Q</kbd> ask</span><span><kbd>Space</kbd> dismiss</span><span><kbd>N</kbd> next</span><span><kbd>R</kbd> reset</span></div>
+  </footer>
+</div>
+
+<div id="report" role="dialog" aria-modal="true" aria-label="Training record"></div>
 <canvas id="cv" hidden></canvas>
 
 <script>
@@ -162,12 +270,12 @@ const PHRASES = {
     begin: (s) => `Let's begin. Step ${s.id}: ${s.title}. ${s.instruction}`,
     next: (s) => `Good. Next: ${s.title}.`,
     stop: (b) => `Stop. You haven't done step ${b.id}: ${b.title}. ${b.instruction} Here's how the expert does it.`,
-    banner: (b) => `STOP: do step ${b.id} first (${b.title})`,
+    banner: (b) => `Stop. Do step ${b.id} first: ${b.title}`,
     hint: (b) => `Before this, step ${b.id}: ${b.title}.`,
     ask: (s) => `I can't quite see. Can you show me: ${s.visual_check}?`,
     thanks: "Thank you. That's the safe way. Carry on.",
     complete: "Procedure complete. Well done.",
-    doneWhen: "Done when", watch: (id) => `Expert doing step ${id}: watch`, step: "Step",
+    doneWhen: "Done when", watch: (id) => `Expert · step ${id}`, step: "Step", of: "of", critical: "Safety-critical",
     finished: "Procedure complete", allDone: "Every step confirmed.",
   },
   it: {
@@ -175,16 +283,18 @@ const PHRASES = {
     begin: (s) => `Iniziamo. Passo ${s.id}: ${s.title}. ${s.instruction}`,
     next: (s) => `Bene. Prossimo: ${s.title}.`,
     stop: (b) => `Fermo. Non hai fatto il passo ${b.id}: ${b.title}. ${b.instruction} Guarda come lo fa l'esperto.`,
-    banner: (b) => `STOP: prima il passo ${b.id} (${b.title})`,
+    banner: (b) => `Fermo. Prima il passo ${b.id}: ${b.title}`,
     hint: (b) => `Prima di questo, passo ${b.id}: ${b.title}.`,
     ask: (s) => `Non vedo bene. Puoi mostrarmi: ${s.visual_check}?`,
     thanks: "Grazie. Così è sicuro. Continua.",
     complete: "Procedura completata. Ottimo lavoro.",
-    doneWhen: "Fatto quando", watch: (id) => `L'esperto fa il passo ${id}: guarda`, step: "Passo",
+    doneWhen: "Fatto quando", watch: (id) => `Esperto · passo ${id}`, step: "Passo", of: "di", critical: "Sicurezza",
     finished: "Procedura completata", allDone: "Tutti i passi confermati.",
   },
 };
 const P = () => PHRASES[lang];
+const KIND = { interrupt: "Stop", hint: "Order", ask: "Can't see", done: "Done", override: "Marked done", complete: "Complete",
+               answer: "Expert", question: "Listening", reset: "Reset", error: "Problem", setup: "Setup" };
 
 function el(tag, props = {}, ...kids) { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; }
 const fileUrl = (path) => `/files/${encodeURIComponent(pid)}/${path}`;
@@ -273,20 +383,25 @@ function renderRail() {
         + (state?.done.includes(s.id) ? " done" : "")
         + (state?.expected === s.id ? " cur" : "")
         + (stop?.step === s.id ? " skipped" : ""),
-    }, el("b", { textContent: `${P().step} ${s.id}` }), el("span", { className: "t", textContent: s.title }));
+      title: `${P().step} ${s.id}: ${s.title}`,
+    }, el("i"), el("span", { className: "n", textContent: String(s.id).padStart(2, "0") }), el("span", { className: "t", textContent: s.title }));
   }));
 }
 
 function showStep(id) {
   const s = id && stepById(id);
   if (!s) {
-    $("instr").replaceChildren(el("h2", { textContent: P().finished }), el("p", { textContent: P().allDone }));
+    $("instr").replaceChildren(el("div", { className: "eyebrow", textContent: `${proc.steps.length} / ${proc.steps.length}` }),
+      el("h2", { textContent: P().finished }), el("p", { textContent: P().allDone }));
     return;
   }
+  const n = proc.steps.findIndex((x) => x.id === s.id) + 1;
   $("instr").replaceChildren(
-    el("h2", { textContent: `${s.id}. ${s.title}` }),
+    el("div", { className: "eyebrow" }, `${P().step} ${n} ${P().of} ${proc.steps.length}`,
+      s.safety_critical ? el("span", { className: "crit", textContent: `· ${P().critical}` }) : ""),
+    el("h2", { textContent: s.title }),
     el("p", { textContent: s.instruction }),
-    el("p", { textContent: `${P().doneWhen}: ${s.visual_check}` }));
+    el("div", { className: "check" }, el("span", { textContent: P().doneWhen }), s.visual_check));
   if (!stop && !clipOnce) showKeyframe(s);
 }
 
@@ -294,7 +409,7 @@ function showKeyframe(s) {
   $("clip").pause(); $("clip").style.display = "none"; clipRange = null; clipOnce = false;
   $("kf").style.display = s.keyframe ? "block" : "none";
   if (s.keyframe) $("kf").src = fileUrl(s.keyframe);
-  $("elabel").textContent = `Expert · ${P().step.toLowerCase()} ${s.id}`;
+  $("elabel").textContent = P().watch(s.id);
   $("expert").classList.remove("stop", "show");
 }
 
@@ -307,7 +422,7 @@ function playClip(s, loop = true) {
   clipRange = s.expert_clip; clipOnce = !loop;
   v.currentTime = clipRange[0];
   v.play().catch(() => {});
-  $("elabel").textContent = P().watch(s.id);
+  $("elabel").textContent = `▶ ${P().watch(s.id)}`;
   $("expert").classList.toggle("stop", loop);
   $("expert").classList.toggle("show", !loop);
 }
@@ -320,16 +435,22 @@ $("clip").ontimeupdate = () => {
 
 let holdCaption = 0;   // an answer stays on screen a while; routine "done" lines don't overwrite it
 function caption(kind, text) {
+  if (document.body.dataset.phase === "setup") {
+    $("note").textContent = text;
+    $("note").className = kind === "error" ? "err" : "";
+    return;
+  }
   const routine = kind === "done" || kind === "override";
   if (routine && performance.now() < holdCaption) return;
   if (kind === "answer") holdCaption = performance.now() + 8000;
   else if (!routine) holdCaption = 0;
-  $("caption").replaceChildren(el("span", { className: `k ${kind}`, textContent: kind }), text);
+  $("caption").replaceChildren(el("span", { className: `k ${kind}`, textContent: KIND[kind] || kind }), text);
 }
 
 function clearStop() {
   stop = null;
   $("live").classList.remove("stop", "ask");
+  $("side").classList.remove("stop");
   renderRail();
   showStep(state?.expected);
 }
@@ -341,6 +462,8 @@ function onEvent(e) {
     stop = { step: e.step, at: e.at_step };
     $("banner").textContent = P().banner(b);
     $("live").classList.add("stop");
+    $("side").classList.add("stop");
+    showStep(e.step);   // the side panel shows what to do now: the skipped step
     playClip(b);
     const line = P().stop(b);
     caption("interrupt", line);
@@ -353,7 +476,7 @@ function onEvent(e) {
     say(line);
   } else if (e.kind === "done" || e.kind === "override") {
     const next = state?.expected && stepById(state.expected);
-    caption(e.kind, `${P().step} ${e.step} ✓ ${stepById(e.step).title}`);
+    caption(e.kind, `${P().step} ${e.step} · ${stepById(e.step).title}`);
     if (stop && e.step === stop.step) { clearStop(); say(P().thanks, true); }
     else if (next && !stop) say(P().next(next));
   } else if (e.kind === "complete") {
@@ -365,11 +488,11 @@ function onEvent(e) {
 }
 
 function renderBench(st) {
-  const items = [["GPU", st.gpu], ["VRAM GB", st.vram_gb], ["frames/s", st.fps], ["SigLIP ms", st.siglip_ms],
-                 ["Gemma p50 ms", st.gemma_p50_ms], ["p95", st.gemma_p95_ms], ["calls", st.gemma_calls],
-                 ["voice", kokoro ? `Kokoro ${ttsMs ?? "…"} ms` : "browser"]];
-  $("bench").replaceChildren(...items.filter(([, v]) => v !== undefined && v !== null)
-    .map(([k, v]) => el("span", {}, `${k} `, el("b", { textContent: v }))));
+  const items = [["", st.gpu], ["VRAM", st.vram_gb && `${st.vram_gb} GB`], ["", st.fps != null && `${st.fps} fps`], ["SigLIP", st.siglip_ms != null && `${st.siglip_ms} ms`],
+                 ["Gemma p50", st.gemma_p50_ms != null && `${st.gemma_p50_ms} ms`], ["p95", st.gemma_p95_ms != null && `${st.gemma_p95_ms} ms`],
+                 ["calls", st.gemma_calls], ["voice", kokoro ? `Kokoro ${ttsMs ?? "…"} ms` : "browser"]];
+  $("bench").replaceChildren(...items.filter(([, v]) => v !== undefined && v !== null && v !== false)
+    .map(([k, v]) => el("span", {}, k ? `${k} ` : "", el("b", { textContent: v }))));
 }
 
 // ---------- connection ----------
@@ -399,7 +522,7 @@ function connect() {
       state = msg.state;
       msg.events.forEach(onEvent);
       renderRail();
-      if (state.expected !== before) showStep(state.expected);
+      if (state.expected !== before && !stop) showStep(state.expected);
       renderBench(msg.stats);
     } else if (msg.type === "reset") {
       log = { ...log, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [] };
@@ -426,8 +549,8 @@ function sendFrame() {
 }
 
 async function start(srcUrl) {
-  lang = $("lang").value;
-  $("lang").disabled = true;
+  if (!pid) return;
+  lang = document.querySelector("input[name=lang]:checked").value;
   if (lang !== "en") {
     caption("setup", "Translating the procedure…");
     try { tr = await api(`/api/procedures/${encodeURIComponent(pid)}/translate?lang=${lang}`, { method: "POST" }); }
@@ -442,6 +565,9 @@ async function start(srcUrl) {
     v.srcObject = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
   }
   await v.play();
+  $("live").classList.toggle("replay", replay);
+  $("livetag").textContent = replay ? "Replay" : "Live";
+  document.body.dataset.phase = "live";
   t0 = performance.now();
   if (!ws || ws.readyState > 1) connect();
   clearInterval(timer);
@@ -449,7 +575,7 @@ async function start(srcUrl) {
 }
 
 $("start").onclick = () => start().catch((e) => caption("error", `Camera: ${e.message}`));
-$("file").onchange = () => $("file").files[0] && start(URL.createObjectURL($("file").files[0]));
+$("file").onchange = () => $("file").files[0] && start(URL.createObjectURL($("file").files[0])).catch((e) => caption("error", e.message));
 
 // ---------- "show me how": push-to-talk or typed question ----------
 let rec = null, chunks = [];
@@ -460,7 +586,7 @@ async function askExpert(body, headers = {}) {
     const step = state?.expected ?? 0;
     const r = await api(`/api/coach/${encodeURIComponent(pid)}/ask?step=${step}&lang=${lang}`, { method: "POST", body, headers });
     log.questions.push({ t: log.lastT, step, question: r.question, answer: r.answer, show_step: r.show_step });
-    caption("answer", `“${r.question}” → ${r.answer}`);
+    caption("answer", `“${r.question}” ${r.answer}`);
     say(r.answer, true);
     if (r.show_step && !stop) playClip(stepById(r.show_step), false);
   } catch (e) { caption("error", e.message); }
@@ -497,7 +623,7 @@ $("typed").onkeydown = (e) => {
 };
 
 document.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (e.target.tagName === "INPUT" || document.body.dataset.phase !== "live") return;
   if (e.code === "Space") { e.preventDefault(); clearStop(); }
   if (e.key === "q" && !e.repeat) startTalk();
   if (e.key === "n" && ws?.readyState === 1) ws.send(JSON.stringify({ cmd: "advance" }));
@@ -548,22 +674,23 @@ function openReport() {
   const sec = (x) => (x === null ? "—" : `${Math.round(x)} s`);
   const kpi = (v, label) => el("div", { className: "kpi" }, el("b", { textContent: v }), el("span", { textContent: label }));
   const tbody = el("tbody", {}, ...r.steps.map((s) => el("tr", {},
-    el("td", { textContent: `${s.id}${s.safety_critical ? " ⚠" : ""}` }),
+    el("td", { textContent: `${String(s.id).padStart(2, "0")}${s.safety_critical ? " ⚠" : ""}` }),
     el("td", { textContent: s.title }),
     el("td", { className: "num", textContent: sec(s.seconds) }),
     el("td", { className: "num", textContent: sec(s.expert_seconds) }),
     el("td", { className: s.status === "done" ? "" : "bad", textContent: s.status }))));
-  const download = el("button", { textContent: "Download JSON", onclick: () => {
+  const download = el("button", { className: "btn", textContent: "Download JSON", onclick: () => {
     const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify(r, null, 2)], { type: "application/json" })),
                         download: `training-record-${pid}-${r.started.slice(0, 19).replace(/[:T]/g, "-")}.json` });
     a.click();
   } });
   const sheet = el("div", { className: "sheet" },
-    el("h2", { textContent: "Training record" }),
-    el("div", { className: "sub", textContent: `${r.procedure} · ${new Date(r.started).toLocaleString()} · coached in ${r.language === "it" ? "Italian" : "English"}` }),
+    el("div", { className: "eyebrow", textContent: "Training record" }),
+    el("h2", { textContent: r.procedure }),
+    el("div", { className: "sub", textContent: `${new Date(r.started).toLocaleString()} · coached in ${r.language === "it" ? "Italian" : "English"}` }),
     el("div", { className: `verdict ${r.verdict === "Competent" ? "pass" : "fail"}`, textContent: r.verdict }),
     el("div", { className: "kpis" },
-      kpi(`${r.duration_s} s`, `total time (expert: ${r.expert_duration_s} s)`),
+      kpi(`${r.duration_s} s`, `total time (expert ${r.expert_duration_s} s)`),
       kpi(r.safety_stops, "safety stops"), kpi(r.hints, "order hints"),
       kpi(r.questions.length, "questions asked"), kpi(r.presenter_overrides, "presenter overrides")),
     el("table", {}, el("thead", {}, el("tr", {}, ...["Step", "", "Trainee", "Expert", "Status"].map((h) => el("th", { textContent: h })))), tbody),
@@ -575,18 +702,33 @@ function openReport() {
     r.questions.length ? el("ul", {}, ...r.questions.map((q) => el("li", { textContent: `“${q.question}” → ${q.answer}` })))
       : el("p", { textContent: "None." }),
     el("div", { className: "actions" },
-      el("button", { textContent: "Print / PDF", onclick: () => window.print() }), download,
-      el("button", { textContent: "Close", onclick: () => $("report").classList.remove("open") })));
+      el("button", { className: "btn", textContent: "Close", onclick: () => $("report").classList.remove("open") }), download,
+      el("button", { className: "btn dark", textContent: "Print / PDF", onclick: () => window.print() })));
   $("report").replaceChildren(sheet);
   $("report").classList.add("open");
 }
 $("showReport").onclick = openReport;
 $("report").onclick = (e) => { if (e.target === $("report")) $("report").classList.remove("open"); };
 
-if (!pid) caption("setup", "Open this page with ?id=<procedure id> (approve the procedure in the Author view first).");
+// ---------- setup screen ----------
+if (!pid) {
+  $("stitle").textContent = "No procedure selected";
+  $("sfacts").textContent = "Open this page with ?id=<procedure id>. Approve the procedure in the Author view first.";
+  $("start").disabled = true;
+} else {
+  fetch(fileUrl("procedure.json")).then((r) => (r.ok ? r.json() : Promise.reject())).then((p) => {
+    const crit = p.steps.filter((s) => s.safety_critical).length;
+    $("stitle").textContent = p.title;
+    $("sfacts").replaceChildren(el("b", { textContent: `${p.steps.length} steps` }), ", ",
+      el("b", { textContent: `${crit} safety-critical` }), ". Point the camera top-down at the work area.");
+  }).catch(() => {
+    $("stitle").textContent = pid;
+    caption("error", "No approved procedure with this id yet. Approve it in the Author view first.");
+  });
+}
 // ?src=/files/<id>/<run>.mp4 replays a recording already on the server (the demo's fallback). Same-origin only.
 const src = params.get("src");
-if (pid && src && src.startsWith("/files/")) { $("start").textContent = "Start replay"; $("start").onclick = () => start(src); }
+if (pid && src && src.startsWith("/files/")) { $("start").textContent = "Start replay"; $("start").onclick = () => start(src).catch((e) => caption("error", e.message)); }
 </script>
 </body>
 </html>

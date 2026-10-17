@@ -106,7 +106,7 @@ The rule engine has its own check with no GPU or models: `python -m tests.test_c
 2. **Expert edit:** open `http://<box>:8080/?id=loto-filter`. Fix titles and checks, flip ⚠, move a boundary to the playhead, split, merge or delete steps. Every change is saved and counted ("Expert edits: 2"; that's the Gate 3 number).
 3. **Approve:** writes `procedure.json`, keyframes and `refs.npy`, which is everything the coach needs. No separate `build_refs` step is required.
 
-In the browser: pick an id, choose the video, click **Upload & draft**, then edit and click **Approve**. From the command line on the box:
+In the browser: pick an id, choose the video, click **Upload and draft** (or pick an existing draft below the form), then select a step to edit it and click **Approve**. **Open coach →** appears once it's approved. From the command line on the box:
 ```bash
 cp my-expert-video.mp4 procedures/loto-filter/expert.mp4
 docker compose exec app python -m app.author procedures/loto-filter
@@ -128,10 +128,11 @@ Checks with no models: `python -m tests.test_author`.
 Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo laptop, click **Start camera**, and point it top-down at the work area.
 
 - The browser sends 4 frames/s over a WebSocket. The server runs the coach on the newest frame. Frames that arrive while Gemma is thinking are kept for the verify window but not processed, so the session never falls behind.
-- **Step rail** at the top (✓ done, ● current, ⚠ safety-critical). The **expert keyframe** and instruction for the current step are on the right.
+- **Setup screen** first: the procedure, the coaching language and **Start camera** (or *replay a recording*). Nothing else until the session starts.
+- **Step bar** at the top (green done, yellow current, red triangle = safety-critical). The current step's instruction and the **expert keyframe** are on the right. The coach's spoken line shows as a subtitle on the live view.
 - **Interrupt:** the live view turns red with a STOP banner, the voice says what was skipped, and the expert's clip of that step loops on the right until the trainee does it.
 - **Voice:** Kokoro-82M on the AMD GPU (`af_heart` in English, `if_sara` in Italian). It warms up when the app starts and repeated lines are cached, so an interrupt you've heard before plays instantly. If Kokoro is missing, still warming up, slow (over 3 s) or broken, the page speaks that line with the browser's own voice and the session carries on. The benchmark strip shows `voice Kokoro N ms` or `voice browser`. Set `TTS=browser` in `.env` to skip Kokoro entirely.
-- **Benchmark strip** at the bottom: GPU name, VRAM in use (including vLLM), frames/s, SigLIP ms, and Gemma p50/p95.
+- **Benchmark strip** along the bottom, kept quiet: GPU name, VRAM in use (including vLLM), frames/s, SigLIP ms, and Gemma p50/p95.
 - **Presenter keys:** `Space` dismisses an interrupt, `N` marks the current step done, `R` resets the session.
 - **Replay instead of the camera:** use the file picker, or put a recording at `procedures/<id>/run.mp4` and open `/coach?id=<id>&src=/files/<id>/run.mp4`. This is the stage fallback if the camera or lighting misbehaves.
 
@@ -139,9 +140,9 @@ Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo lapt
 
 ## Phase 5: "show me how", bilingual coaching, training record
 
-- **Ask the expert:** hold 🎤 (or hold `Q`) and ask out loud, e.g. "where does the new filter go?". Whisper transcribes the question. Gemma answers in at most two sentences, grounded in the procedure and the expert's narration from `draft.json`, and names the step whose clip shows the answer. The voice speaks the answer and the expert's clip of that step plays once (blue border). The text box next to the button is the fallback for a noisy room.
+- **Ask the expert:** hold **Hold to ask** (or hold `Q`) and ask out loud, e.g. "where does the new filter go?". Whisper transcribes the question. Gemma answers in at most two sentences, grounded in the procedure and the expert's narration from `draft.json`, and names the step whose clip shows the answer. The voice speaks the answer and the expert's clip of that step plays once (blue border). The text box next to the button is the fallback for a noisy room.
 - **Bilingual:** pick **Italiano** before Start. Gemma translates the step texts once and caches them in `procedure.it.json` until the next approval. Spoken lines come from a small phrase table per language, so they never depend on a live model. Questions are answered in the coaching language.
-- **Training record:** opens by itself when the procedure completes, or anytime via **Report**. It shows the verdict (*Competent* only with zero safety stops and zero presenter overrides), trainee vs expert time per step, the mistakes caught, and the questions asked. **Print / PDF** and **Download JSON** are on the record.
+- **Training record:** opens by itself when the procedure completes, or anytime via **Training record**. It shows the verdict (*Competent* only with zero safety stops and zero presenter overrides), trainee vs expert time per step, the mistakes caught, and the questions asked. **Print / PDF** and **Download JSON** are on the record.
 
 Endpoints: `POST /api/coach/<id>/ask?step=N&lang=en|it` (body: audio, or JSON `{"text": ...}`) and `POST /api/procedures/<id>/translate?lang=it`. Both need `X-App-Token` when `APP_TOKEN` is set.
 
