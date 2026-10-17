@@ -16,6 +16,10 @@ This folder splits the original brief (`../amd-developer-hackathon-act-iii.md`) 
 | 8 | [07-open-questions.md](07-open-questions.md) | What the brief does **not** say — confirm before relying on it |
 | 9 | [08-ideas-by-track.md](08-ideas-by-track.md) | What could I build in each track? (idea bank + fast lanes) |
 | 10 | [09-idea-catalog.md](09-idea-catalog.md) | Every idea in plain language — what it is, who it's for, the demo, the number |
+| 11 | [10-hostile-review-and-upgrades.md](10-hostile-review-and-upgrades.md) | Which ideas a hostile panel kills, and the upgraded version of each that survives |
+| 12 | [11-wow-ideas.md](11-wow-ideas.md) | Ideas no other team will have — the 15-second wow moments, grounded and buildable |
+| 13 | [12-sibilo-build-plan.md](12-sibilo-build-plan.md) | Full build plan for Sibilo (acoustic camera): schedule, algorithms, demo script, risks |
+| 14 | [13-ghost-expert-build-plan.md](13-ghost-expert-build-plan.md) | Full build plan for Ghost Expert (film an expert once, AI coaches trainees live): models, architecture, demo script, risks |
 
 ---
 

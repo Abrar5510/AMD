@@ -285,3 +285,5 @@
 - [ ] AMD workload visible in the video (model card, endpoint log, or terminal running the GPU job).
 - [ ] The number is explained in-product ("how this was computed" panel), not only on a slide.
 - [ ] Demo video recorded early as rehearsal — re-record with the same script every time it improves.
+
+> **Stress test:** every idea above was torn apart by a hostile panel in [10-hostile-review-and-upgrades.md](10-hostile-review-and-upgrades.md) — read the V2 of your pick before locking it.

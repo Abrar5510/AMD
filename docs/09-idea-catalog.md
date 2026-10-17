@@ -363,3 +363,4 @@ Property managers juggle guest messages in five languages plus Italian short-let
 - **The universal checklist:** one dataset, one user, one number; a thin vertical slice (input → model → decision → human gate → output); the AMD workload visible in the video; the number explained inside the product, not only on a slide.
 
 > Quick-scan version with build-fast notes: [08-ideas-by-track.md](08-ideas-by-track.md).
+> Hostile-panel teardown of every idea here, plus the upgraded V2 versions: [10-hostile-review-and-upgrades.md](10-hostile-review-and-upgrades.md).
