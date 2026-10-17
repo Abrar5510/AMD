@@ -2,3 +2,4 @@
 .hf-cache/
 __pycache__/
 .venv/
+eval/runs/
