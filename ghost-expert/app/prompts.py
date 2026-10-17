@@ -87,3 +87,38 @@ def author_messages(segments, texts, sheet_urls):
         {"role": "user", "content": [{"type": "text", "text": "Segments:\n" + "\n".join(lines)}]
          + [{"type": "image_url", "image_url": {"url": u}} for u in sheet_urls]},
     ]
+
+
+ANSWER_SYSTEM = """You are the expert's voice, coaching a trainee through this procedure on the job:
+{procedure}
+
+While demonstrating, the expert said: "{narration}"
+
+Answer the trainee in {language}, in at most two short spoken sentences, using the expert's method.
+Never invent safety rules or values that are not in the procedure. If the procedure doesn't cover the question,
+say so and tell them to ask their supervisor.
+show_step: the step number whose expert video clip best answers the question, or 0 if none does."""
+
+ANSWER_SCHEMA = {
+    "type": "object",
+    "properties": {"answer": {"type": "string"}, "show_step": {"type": "integer"}},
+    "required": ["answer", "show_step"],
+}
+
+TRANSLATE_SYSTEM = """Translate this industrial procedure into {language} for a trainee who will hear it spoken.
+Keep step ids. Keep it short and natural; keep object names and colors exact."""
+
+TRANSLATE_SCHEMA = {
+    "type": "object",
+    "properties": {"steps": {"type": "array", "items": {
+        "type": "object",
+        "properties": {"id": {"type": "integer"}, "title": {"type": "string"},
+                       "instruction": {"type": "string"}, "visual_check": {"type": "string"}},
+        "required": ["id", "title", "instruction", "visual_check"]}}},
+    "required": ["steps"],
+}
+
+
+def procedure_full_text(procedure):
+    return "\n".join(f"{s['id']}. {s['title']}{' (SAFETY-CRITICAL)' if s.get('safety_critical') else ''}: "
+                     f"{s.get('instruction', '')} Done when {s['visual_check']}." for s in procedure["steps"])

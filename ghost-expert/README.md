@@ -4,7 +4,7 @@ An expert films a procedure once. Ghost Expert turns it into steps, then watches
 
 Everything runs on one AMD Instinct GPU: Gemma 3 (vision) served by vLLM on ROCm. Full plan: [../docs/13-ghost-expert-build-plan.md](../docs/13-ghost-expert-build-plan.md).
 
-> Status: **Phase 4**: live coaching in the browser (camera → AMD GPU → voice + interrupt with the expert's clip). Authoring and replay evals work too.
+> Status: **Phase 5**: live coaching with voice questions, bilingual coaching (English/Italian) and a printable training record. Authoring and replay evals work too.
 
 ## Run it on the AMD Developer Cloud box
 
@@ -121,6 +121,8 @@ docker compose exec app python -m app.author procedures/loto-filter --approve
 
 Checks with no models: `python -m tests.test_author`.
 
+**Kokoro on a Mac (local dev only):** the bundled espeak-ng has a broken data path on macOS. Run `brew install espeak-ng` and set `ESPEAK_DATA_PATH=/opt/homebrew/share/espeak-ng-data`. Kokoro also needs Python ≤ 3.12 and `python -m spacy download en_core_web_sm`. The Docker image handles all of this. If espeak is broken, the app logs "Kokoro unavailable" and uses browser speech: espeak exits instead of raising an error, so each language is tested in a child process first and the server stays up.
+
 ## Phase 4: the live coach
 
 Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo laptop, click **Start camera**, and point it top-down at the work area.
@@ -128,12 +130,20 @@ Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo lapt
 - The browser sends 4 frames/s over a WebSocket. The server runs the coach on the newest frame. Frames that arrive while Gemma is thinking are kept for the verify window but not processed, so the session never falls behind.
 - **Step rail** at the top (✓ done, ● current, ⚠ safety-critical). The **expert keyframe** and instruction for the current step are on the right.
 - **Interrupt:** the live view turns red with a STOP banner, the voice says what was skipped, and the expert's clip of that step loops on the right until the trainee does it.
-- **Voice:** the browser's built-in speech (Web Speech API). Pick a good system voice on the demo laptop (macOS "Premium" voices sound best).
+- **Voice:** Kokoro-82M on the AMD GPU (`af_heart` in English, `if_sara` in Italian). It warms up when the app starts and repeated lines are cached, so an interrupt you've heard before plays instantly. If Kokoro is missing, still warming up, slow (over 3 s) or broken, the page speaks that line with the browser's own voice and the session carries on. The benchmark strip shows `voice Kokoro N ms` or `voice browser`. Set `TTS=browser` in `.env` to skip Kokoro entirely.
 - **Benchmark strip** at the bottom: GPU name, VRAM in use (including vLLM), frames/s, SigLIP ms, and Gemma p50/p95.
 - **Presenter keys:** `Space` dismisses an interrupt, `N` marks the current step done, `R` resets the session.
 - **Replay instead of the camera:** use the file picker, or put a recording at `procedures/<id>/run.mp4` and open `/coach?id=<id>&src=/files/<id>/run.mp4`. This is the stage fallback if the camera or lighting misbehaves.
 
 **Gate 3 (plan Phase 4):** a teammate who hasn't seen the code does the task 3 times. The interrupt fires when they skip step 4, and never when they don't.
+
+## Phase 5: "show me how", bilingual coaching, training record
+
+- **Ask the expert:** hold 🎤 (or hold `Q`) and ask out loud, e.g. "where does the new filter go?". Whisper transcribes the question. Gemma answers in at most two sentences, grounded in the procedure and the expert's narration from `draft.json`, and names the step whose clip shows the answer. The voice speaks the answer and the expert's clip of that step plays once (blue border). The text box next to the button is the fallback for a noisy room.
+- **Bilingual:** pick **Italiano** before Start. Gemma translates the step texts once and caches them in `procedure.it.json` until the next approval. Spoken lines come from a small phrase table per language, so they never depend on a live model. Questions are answered in the coaching language.
+- **Training record:** opens by itself when the procedure completes, or anytime via **Report**. It shows the verdict (*Competent* only with zero safety stops and zero presenter overrides), trainee vs expert time per step, the mistakes caught, and the questions asked. **Print / PDF** and **Download JSON** are on the record.
+
+Endpoints: `POST /api/coach/<id>/ask?step=N&lang=en|it` (body: audio, or JSON `{"text": ...}`) and `POST /api/procedures/<id>/translate?lang=it`. Both need `X-App-Token` when `APP_TOKEN` is set.
 
 ## License
 

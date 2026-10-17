@@ -1,15 +1,20 @@
 import json
 import os
 import re
+import subprocess
+import sys
+import threading
+import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import httpx
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, WebSocket
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-from app import author
+from app import assist, author, models
 from app.live import run_session
 from app.vlm import HEADERS, VLLM_URL
 
@@ -17,10 +22,40 @@ PROCEDURES = Path(os.environ.get("PROCEDURES_DIR", "procedures"))
 WEB = Path(__file__).resolve().parent.parent / "web"
 APP_TOKEN = os.environ.get("APP_TOKEN")  # if set, every write needs it: the app URL is public
 MAX_UPLOAD = int(os.environ.get("MAX_UPLOAD_MB", "500")) * 1024 * 1024
+MAX_QUESTION = 5 * 1024 * 1024  # a push-to-talk clip is a few hundred KB
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,39}$")
 
+TTS = os.environ.get("TTS", "kokoro")  # kokoro: voice on the GPU | browser: the page's own speech
+tts_state = {"ready": False, "langs": set(), "errors": {} if TTS == "kokoro" else {"all": "TTS=browser"}}
+
+
+def warm_tts():
+    """Load Kokoro before the first interrupt needs it, one language at a time.
+
+    espeak-ng (Kokoro's phonemizer) exits the whole process on a broken install instead of raising,
+    so each language is proven in a child process first. A failure only turns that language over to browser speech.
+    """
+    for lang, line in (("en", "Ready."), ("it", "Pronto.")):
+        child = subprocess.run([sys.executable, "-c", f"from app.models import speak; speak({line!r}, {lang!r})"],
+                               capture_output=True, text=True, timeout=900)
+        if child.returncode:
+            tts_state["errors"][lang] = (child.stderr.strip() or f"exit {child.returncode}")[-300:]
+            print(f"Kokoro unavailable for {lang}, browser speech will be used: {tts_state['errors'][lang]}")
+            continue
+        models.speak(line, lang)
+        tts_state["langs"].add(lang)
+    tts_state["ready"] = True
+
+
+@asynccontextmanager
+async def lifespan(_):
+    if TTS == "kokoro":
+        threading.Thread(target=warm_tts, daemon=True).start()
+    yield
+
+
 PROCEDURES.mkdir(exist_ok=True)
-app = FastAPI(title="Ghost Expert")
+app = FastAPI(title="Ghost Expert", lifespan=lifespan)
 app.mount("/files", StaticFiles(directory=PROCEDURES), name="files")
 
 
@@ -130,3 +165,57 @@ async def approve(pid: str):
         return await run_in_threadpool(author.approve, proc_dir(pid))
     except ValueError as e:
         raise HTTPException(422, str(e))
+
+
+def approved(pid):
+    d = proc_dir(pid)
+    if not (d / "procedure.json").exists():
+        raise HTTPException(404, "no approved procedure")
+    return d
+
+
+def language(lang):
+    if lang not in assist.LANGUAGES:
+        raise HTTPException(422, f"language must be one of {sorted(assist.LANGUAGES)}")
+    return lang
+
+
+@app.post("/api/procedures/{pid}/translate", dependencies=[Depends(writer)])
+async def translate(pid: str, lang: str):
+    return await run_in_threadpool(assist.translate, approved(pid), language(lang))
+
+
+@app.post("/api/coach/{pid}/ask", dependencies=[Depends(writer)])
+async def ask(pid: str, request: Request, step: int = 0, lang: str = "en"):
+    """Body: a push-to-talk recording (audio/*), or JSON {"text": "..."} for the typed fallback."""
+    d, lang = approved(pid), language(lang)
+    body = await request.body()
+    if len(body) > MAX_QUESTION:
+        raise HTTPException(413, "question too long")
+    if request.headers.get("content-type", "").startswith("application/json"):
+        question = str(json.loads(body or b"{}").get("text", "")).strip()[:500]
+    else:
+        question = await run_in_threadpool(assist.hear, body)
+    if not question:
+        raise HTTPException(422, "didn't catch a question")
+    return {"question": question, **await run_in_threadpool(assist.answer, d, step, question, lang)}
+
+
+@app.post("/api/tts", dependencies=[Depends(writer)])
+async def tts(body: dict):
+    """{"text", "lang"} -> WAV from Kokoro on the GPU. 503 tells the page to use its own speech instead."""
+    text, lang = str(body.get("text", "")).strip()[:400], language(str(body.get("lang", "en")))
+    if "all" in tts_state["errors"]:
+        raise HTTPException(503, f"Kokoro off: {tts_state['errors']['all']}")
+    if not tts_state["ready"] and lang not in tts_state["langs"]:
+        raise HTTPException(503, "Kokoro warming up")
+    if lang not in tts_state["langs"]:
+        raise HTTPException(503, f"Kokoro off for {lang}: {tts_state['errors'].get(lang, 'unknown')}")
+    if not text:
+        raise HTTPException(422, "no text")
+    t0 = time.perf_counter()
+    try:
+        wav = await run_in_threadpool(models.speak, text, lang)
+    except Exception as e:
+        raise HTTPException(503, f"Kokoro failed: {type(e).__name__}: {e}")
+    return Response(wav, media_type="audio/wav", headers={"X-TTS-Ms": f"{(time.perf_counter() - t0) * 1000:.0f}"})

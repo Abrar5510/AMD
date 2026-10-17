@@ -1,6 +1,7 @@
-"""Models that run inside the app on the AMD GPU (Gemma runs in the vLLM container): SigLIP and Whisper."""
+"""Models that run inside the app on the AMD GPU (Gemma runs in the vLLM container): SigLIP, Whisper, Kokoro."""
 import io
 import os
+import wave
 from functools import lru_cache
 
 import numpy as np
@@ -55,3 +56,36 @@ def transcribe(samples, sr=16000, pause_s=0.6):
         else:
             segments.append({"start": start, "end": end, "text": w["text"].strip()})
     return [s for s in segments if s["text"]]
+
+
+# Kokoro-82M: the coach's voice, on the same GPU. Optional: without it the browser speaks instead.
+KOKORO_VOICES = {"en": ("a", "af_heart"), "it": ("i", "if_sara")}  # lang -> (Kokoro lang code, voice)
+KOKORO_SR = 24000
+
+
+@lru_cache(maxsize=1)
+def _kokoro_model():
+    from kokoro import KModel  # imported lazily: the app runs without Kokoro installed
+    return KModel(repo_id="hexgrad/Kokoro-82M").to(DEVICE).eval()
+
+
+@lru_cache(maxsize=len(KOKORO_VOICES))
+def _kokoro(lang):
+    from kokoro import KPipeline
+    return KPipeline(lang_code=KOKORO_VOICES[lang][0], repo_id="hexgrad/Kokoro-82M", model=_kokoro_model())
+
+
+@lru_cache(maxsize=128)  # the coach repeats itself (interrupts, "Good. Next: ..."): repeats cost nothing
+def speak(text, lang="en"):
+    """Text -> 16-bit mono WAV bytes at 24 kHz."""
+    pipe = _kokoro(lang)
+    with torch.inference_mode():
+        parts = [r.audio for r in pipe(text, voice=KOKORO_VOICES[lang][1], speed=1.05) if r.audio is not None]
+    samples = torch.cat([torch.as_tensor(a).flatten().float().cpu() for a in parts]).numpy() if parts else np.zeros(1)
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(KOKORO_SR)
+        w.writeframes((np.clip(samples, -1, 1) * 32767).astype(np.int16).tobytes())
+    return buf.getvalue()

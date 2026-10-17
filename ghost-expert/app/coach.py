@@ -37,7 +37,7 @@ class Config:
 @dataclass
 class Event:
     t: float                    # frame time that triggered the decision
-    kind: str                   # done | interrupt | hint | ask | complete
+    kind: str                   # done | override (presenter) | interrupt | hint | ask | complete
     step: int                   # the step the event is about (for interrupt/hint: the skipped step)
     text: str
     secs: float = 0.0           # Gemma time spent on this decision
@@ -95,7 +95,7 @@ class Coach:
         if sid is None:
             return []
         self.done.add(sid)
-        return [Event(t, "done", sid, f"Step {sid} marked done by the presenter.")]
+        return [Event(t, "override", sid, f"Step {sid} marked done by the presenter.")]
 
     def feed(self, t, jpeg):
         cfg = self.cfg

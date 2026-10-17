@@ -7,14 +7,15 @@
 <style>
   :root {
     --bg: #0f1114; --panel: #171a1f; --line: #2a2f37; --text: #e8eaed; --muted: #8b93a1;
-    --accent: #ffd200; --danger: #ff3b3b; --warn: #ff9f1a; --ok: #3ecf8e;
+    --accent: #ffd200; --danger: #ff3b3b; --warn: #ff9f1a; --ok: #3ecf8e; --info: #5aa9ff;
   }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
-         display: grid; grid-template-rows: auto auto 1fr auto; }
+         display: grid; grid-template-rows: auto auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
   input, button, select { font: inherit; color: inherit; }
-  button { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  button, select { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
   button.primary { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 600; }
+  button:disabled, select:disabled { opacity: .5; cursor: default; }
   header { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--line); }
   header h1 { font-size: 16px; margin: 0; }
   header h1 span { color: var(--accent); }
@@ -34,10 +35,10 @@
   .chip.cur b::before { content: "● "; color: var(--accent); }
   .chip.skipped { border-color: var(--danger); background: #3a1414; }
   main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; padding: 0 20px 16px; min-height: 0; }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } .pane { aspect-ratio: 16 / 9; min-height: 0; } }
   .pane { position: relative; background: #000; border-radius: 10px; overflow: hidden; border: 3px solid transparent; min-height: 240px;
           display: flex; align-items: center; justify-content: center; transition: border-color .15s; }
   .pane video, .pane img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  @media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } .pane { aspect-ratio: 16 / 9; min-height: 0; } }
   .label { position: absolute; top: 10px; left: 10px; font-size: 12px; padding: 3px 8px; border-radius: 4px; background: rgba(0,0,0,.6); }
   #live.stop { border-color: var(--danger); }
   #live.ask { border-color: var(--warn); }
@@ -50,19 +51,55 @@
   @media (prefers-reduced-motion: reduce) { #live.stop::after { animation: none; } }
   .side { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; min-height: 0; }
   #expert.stop { border-color: var(--danger); }
+  #expert.show { border-color: var(--info); }
   #instr { background: var(--panel); border-radius: 10px; padding: 12px 14px; }
   #instr h2 { margin: 0 0 4px; font-size: 18px; }
   #instr p { margin: 4px 0; color: var(--muted); }
-  footer { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 10px 20px; background: var(--panel); border-top: 1px solid var(--line); }
+  footer { display: flex; gap: 12px 16px; align-items: center; flex-wrap: wrap; padding: 10px 20px; background: var(--panel); border-top: 1px solid var(--line); }
   #caption { font-size: 17px; flex: 1 1 300px; }
   #caption .k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 2px 6px; border-radius: 4px; margin-right: 8px; background: var(--line); }
   #caption .k.interrupt { background: var(--danger); color: #fff; }
   #caption .k.hint, #caption .k.ask { background: var(--warn); color: #111; }
-  #caption .k.done, #caption .k.complete { background: var(--ok); color: #111; }
+  #caption .k.done, #caption .k.complete, #caption .k.override { background: var(--ok); color: #111; }
+  #caption .k.answer, #caption .k.question { background: var(--info); color: #111; }
+  #askbox { display: flex; gap: 6px; align-items: center; }
+  #talk { user-select: none; touch-action: none; }
+  #talk.rec { background: var(--danger); border-color: var(--danger); color: #fff; }
+  #typed { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 220px; max-width: 45vw; }
   #bench { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
   #bench b { color: var(--text); font-weight: 600; }
   .keys { font-size: 12px; color: var(--muted); }
   kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font: 11px ui-monospace, monospace; }
+
+  /* session report: the training manager's screen, printable to PDF */
+  #report { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: flex-start; justify-content: center;
+            padding: 40px 16px; overflow-y: auto; z-index: 10; }
+  #report.open { display: flex; }
+  .sheet { background: #fff; color: #15171a; width: min(820px, 100%); border-radius: 10px; padding: 28px 32px; }
+  .sheet h2 { margin: 0; font-size: 22px; }
+  .sheet .sub { color: #5d6470; margin: 4px 0 18px; }
+  .verdict { display: inline-block; padding: 6px 14px; border-radius: 6px; font-weight: 700; margin-bottom: 18px; }
+  .verdict.pass { background: #d7f5e6; color: #0b6b3f; }
+  .verdict.fail { background: #ffe0e0; color: #a01818; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .kpi { border: 1px solid #e3e6ea; border-radius: 8px; padding: 10px 12px; }
+  .kpi b { display: block; font-size: 22px; }
+  .kpi span { color: #5d6470; font-size: 12px; }
+  .sheet table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 18px; }
+  .sheet th, .sheet td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e3e6ea; vertical-align: top; }
+  .sheet th { font-size: 12px; color: #5d6470; font-weight: 600; }
+  .sheet td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sheet .bad { color: #a01818; font-weight: 600; }
+  .sheet h3 { font-size: 15px; margin: 6px 0 8px; }
+  .sheet ul { margin: 0 0 16px; padding-left: 18px; }
+  .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .sheet .actions button { background: #f1f3f5; border-color: #d5d9de; color: #15171a; }
+  @media print {
+    body > *:not(#report) { display: none !important; }
+    #report { position: static; display: block; background: none; padding: 0; }
+    .sheet { width: 100%; padding: 0; }
+    .sheet .actions { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -70,8 +107,13 @@
   <h1>Ghost <span>Expert</span> · Coach</h1>
   <span id="ptitle"></span>
   <span class="grow"></span>
+  <select id="lang" title="Coaching language">
+    <option value="en">English</option>
+    <option value="it">Italiano</option>
+  </select>
   <input id="file" type="file" accept="video/*" title="Replay a recorded run instead of the camera" style="max-width:220px">
   <button id="start" class="primary">Start camera</button>
+  <button id="showReport" disabled>Report</button>
   <span id="conn">offline</span>
 </header>
 <div id="rail"></div>
@@ -92,9 +134,14 @@
 </main>
 <footer>
   <div id="caption"></div>
+  <div id="askbox">
+    <button id="talk" title="Hold to ask the expert (or hold Q)">🎤 Hold to ask</button>
+    <input id="typed" type="text" placeholder="…or type a question">
+  </div>
   <div id="bench"></div>
-  <div class="keys"><kbd>Space</kbd> dismiss · <kbd>N</kbd> next step · <kbd>R</kbd> reset</div>
+  <div class="keys"><kbd>Q</kbd> hold to ask · <kbd>Space</kbd> dismiss · <kbd>N</kbd> next · <kbd>R</kbd> reset</div>
 </footer>
+<div id="report" role="dialog" aria-modal="true" aria-label="Session report"></div>
 <canvas id="cv" hidden></canvas>
 
 <script>
@@ -103,71 +150,180 @@ const params = new URLSearchParams(location.search);
 const pid = params.get("id"), token = params.get("token");
 const FPS = 4, WIDTH = 512;
 let ws = null, proc = null, state = null, timer = null, t0 = 0, replay = false;
-let stop = null;          // {step, at} while an interrupt is active
-let clipRange = null;
+let stop = null;                  // {step, at} while an interrupt is active
+let clipRange = null, clipOnce = false;
+let lang = "en", tr = {};         // tr: step id -> {title, instruction, visual_check} in the coaching language
+let log = null;                   // session record for the report
+
+// ---------- spoken phrases per language (step texts come from Gemma's translation) ----------
+const PHRASES = {
+  en: {
+    voice: "en-US",
+    begin: (s) => `Let's begin. Step ${s.id}: ${s.title}. ${s.instruction}`,
+    next: (s) => `Good. Next: ${s.title}.`,
+    stop: (b) => `Stop. You haven't done step ${b.id}: ${b.title}. ${b.instruction} Here's how the expert does it.`,
+    banner: (b) => `STOP: do step ${b.id} first (${b.title})`,
+    hint: (b) => `Before this, step ${b.id}: ${b.title}.`,
+    ask: (s) => `I can't quite see. Can you show me: ${s.visual_check}?`,
+    thanks: "Thank you. That's the safe way. Carry on.",
+    complete: "Procedure complete. Well done.",
+    doneWhen: "Done when", watch: (id) => `Expert doing step ${id}: watch`, step: "Step",
+    finished: "Procedure complete", allDone: "Every step confirmed.",
+  },
+  it: {
+    voice: "it-IT",
+    begin: (s) => `Iniziamo. Passo ${s.id}: ${s.title}. ${s.instruction}`,
+    next: (s) => `Bene. Prossimo: ${s.title}.`,
+    stop: (b) => `Fermo. Non hai fatto il passo ${b.id}: ${b.title}. ${b.instruction} Guarda come lo fa l'esperto.`,
+    banner: (b) => `STOP: prima il passo ${b.id} (${b.title})`,
+    hint: (b) => `Prima di questo, passo ${b.id}: ${b.title}.`,
+    ask: (s) => `Non vedo bene. Puoi mostrarmi: ${s.visual_check}?`,
+    thanks: "Grazie. Così è sicuro. Continua.",
+    complete: "Procedura completata. Ottimo lavoro.",
+    doneWhen: "Fatto quando", watch: (id) => `L'esperto fa il passo ${id}: guarda`, step: "Passo",
+    finished: "Procedura completata", allDone: "Tutti i passi confermati.",
+  },
+};
+const P = () => PHRASES[lang];
 
 function el(tag, props = {}, ...kids) { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; }
-const stepById = (id) => proc.steps.find((s) => s.id === id);
 const fileUrl = (path) => `/files/${encodeURIComponent(pid)}/${path}`;
+const stepById = (id) => {   // the step, with its texts in the coaching language
+  const s = proc.steps.find((x) => x.id === id);
+  return s && { ...s, ...(tr[id] || {}) };
+};
+async function api(path, opts = {}) {
+  const headers = { ...(opts.headers || {}) };
+  if (token) headers["X-App-Token"] = token;
+  const r = await fetch(path, { ...opts, headers });
+  const body = r.headers.get("content-type")?.includes("json") ? await r.json() : await r.text();
+  if (!r.ok) throw new Error(body.detail || body || r.statusText);
+  return body;
+}
 
-// ---------- speech: the browser's own TTS ----------
+// ---------- speech: Kokoro on the AMD GPU, the browser's own voice as fallback ----------
+// Every line starts fetching at once (so audio overlaps with what's playing) but plays in order.
+// Urgent lines (interrupts) cut everything queued. Kokoro failing or slow never silences the coach.
+let kokoro = true, kokoroFails = 0, ttsMs = null, speechGen = 0, chain = Promise.resolve(), current = null;
+
+function stopSpeech() {
+  speechGen += 1;
+  current?.pause();
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  chain = Promise.resolve();
+}
+
+async function fetchKokoro(text) {
+  const ctrl = new AbortController(), timeout = setTimeout(() => ctrl.abort(), 3000);
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["X-App-Token"] = token;
+    const r = await fetch("/api/tts", { method: "POST", headers, body: JSON.stringify({ text, lang }), signal: ctrl.signal });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      if (r.status === 503 && !/warming/.test(d.detail || "")) kokoro = false;   // off for this session
+      throw new Error(d.detail || r.statusText);
+    }
+    ttsMs = r.headers.get("X-TTS-Ms");
+    kokoroFails = 0;
+    return URL.createObjectURL(await r.blob());
+  } catch (e) {
+    if (++kokoroFails >= 3) kokoro = false;
+    throw e;
+  } finally { clearTimeout(timeout); }
+}
+
+function playUrl(url) {
+  return new Promise((done) => {
+    const a = new Audio(url);
+    current = a;
+    a.onended = a.onerror = () => { URL.revokeObjectURL(url); done(); };
+    a.play().catch(done);
+  });
+}
+
+function browserSay(text) {
+  return new Promise((done) => {
+    if (!("speechSynthesis" in window)) return done();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.05;
+    u.lang = P().voice;
+    u.onend = u.onerror = done;
+    speechSynthesis.speak(u);
+  });
+}
+
 function say(text, urgent = false) {
-  if (!("speechSynthesis" in window)) return;
-  if (urgent) speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 1.05;
-  u.lang = "en-US";
-  speechSynthesis.speak(u);
+  if (urgent) stopSpeech();
+  const gen = speechGen;
+  const audio = kokoro ? fetchKokoro(text).catch(() => null) : Promise.resolve(null);
+  chain = chain.then(async () => {
+    const url = await audio;
+    if (gen !== speechGen) return;
+    await (url ? playUrl(url) : browserSay(text));
+  });
 }
 
 // ---------- UI ----------
 function renderRail() {
-  $("rail").replaceChildren(...proc.steps.map((s) => el("div", {
-    className: "chip" + (s.safety_critical ? " crit" : "")
-      + (state?.done.includes(s.id) ? " done" : "")
-      + (state?.expected === s.id ? " cur" : "")
-      + (stop?.step === s.id ? " skipped" : ""),
-  }, el("b", { textContent: `Step ${s.id}` }), el("span", { className: "t", textContent: s.title }))));
+  $("rail").replaceChildren(...proc.steps.map((x) => {
+    const s = stepById(x.id);
+    return el("div", {
+      className: "chip" + (s.safety_critical ? " crit" : "")
+        + (state?.done.includes(s.id) ? " done" : "")
+        + (state?.expected === s.id ? " cur" : "")
+        + (stop?.step === s.id ? " skipped" : ""),
+    }, el("b", { textContent: `${P().step} ${s.id}` }), el("span", { className: "t", textContent: s.title }));
+  }));
 }
 
 function showStep(id) {
   const s = id && stepById(id);
   if (!s) {
-    $("instr").replaceChildren(el("h2", { textContent: "Procedure complete" }), el("p", { textContent: "Every step confirmed." }));
+    $("instr").replaceChildren(el("h2", { textContent: P().finished }), el("p", { textContent: P().allDone }));
     return;
   }
   $("instr").replaceChildren(
     el("h2", { textContent: `${s.id}. ${s.title}` }),
     el("p", { textContent: s.instruction }),
-    el("p", { textContent: `Done when: ${s.visual_check}` }));
-  if (!stop) showKeyframe(s);
+    el("p", { textContent: `${P().doneWhen}: ${s.visual_check}` }));
+  if (!stop && !clipOnce) showKeyframe(s);
 }
 
 function showKeyframe(s) {
-  $("clip").pause(); $("clip").style.display = "none"; clipRange = null;
+  $("clip").pause(); $("clip").style.display = "none"; clipRange = null; clipOnce = false;
   $("kf").style.display = s.keyframe ? "block" : "none";
   if (s.keyframe) $("kf").src = fileUrl(s.keyframe);
-  $("elabel").textContent = `Expert · step ${s.id}`;
-  $("expert").classList.remove("stop");
+  $("elabel").textContent = `Expert · ${P().step.toLowerCase()} ${s.id}`;
+  $("expert").classList.remove("stop", "show");
 }
 
-function playClip(s) {
+// loop = true: until the trainee does the step (interrupt). loop = false: once, then back to the current step (Q&A).
+function playClip(s, loop = true) {
   if (!s.expert_clip) return showKeyframe(s);
   const v = $("clip");
   $("kf").style.display = "none"; v.style.display = "block";
   if (!v.src.endsWith("expert.mp4")) v.src = fileUrl("expert.mp4");
-  clipRange = s.expert_clip;
+  clipRange = s.expert_clip; clipOnce = !loop;
   v.currentTime = clipRange[0];
   v.play().catch(() => {});
-  $("elabel").textContent = `Expert doing step ${s.id}: watch`;
-  $("expert").classList.add("stop");
+  $("elabel").textContent = P().watch(s.id);
+  $("expert").classList.toggle("stop", loop);
+  $("expert").classList.toggle("show", !loop);
 }
-$("clip").ontimeupdate = () => {   // loop the expert's clip until the trainee does the step
+$("clip").ontimeupdate = () => {
   const v = $("clip");
-  if (clipRange && v.currentTime >= clipRange[1]) v.currentTime = clipRange[0];
+  if (!clipRange || v.currentTime < clipRange[1]) return;
+  if (clipOnce) { clipOnce = false; const cur = state && stepById(state.expected); if (stop) playClip(stepById(stop.step)); else if (cur) showKeyframe(cur); }
+  else v.currentTime = clipRange[0];
 };
 
+let holdCaption = 0;   // an answer stays on screen a while; routine "done" lines don't overwrite it
 function caption(kind, text) {
+  const routine = kind === "done" || kind === "override";
+  if (routine && performance.now() < holdCaption) return;
+  if (kind === "answer") holdCaption = performance.now() + 8000;
+  else if (!routine) holdCaption = 0;
   $("caption").replaceChildren(el("span", { className: `k ${kind}`, textContent: kind }), text);
 }
 
@@ -179,35 +335,39 @@ function clearStop() {
 }
 
 function onEvent(e) {
+  log.events.push(e);
   if (e.kind === "interrupt") {
+    const b = stepById(e.step);
     stop = { step: e.step, at: e.at_step };
-    $("banner").textContent = `STOP: do step ${e.step} first (${stepById(e.step).title})`;
+    $("banner").textContent = P().banner(b);
     $("live").classList.add("stop");
-    playClip(stepById(e.step));
-    caption("interrupt", e.text);
-    say(e.text + " Here's how the expert does it.", true);
+    playClip(b);
+    const line = P().stop(b);
+    caption("interrupt", line);
+    say(line, true);
   } else if (e.kind === "hint" || e.kind === "ask") {
     $("live").classList.add("ask");
     setTimeout(() => $("live").classList.remove("ask"), 2500);
-    caption(e.kind, e.text);
-    say(e.text);
-  } else if (e.kind === "done") {
-    if (stop && e.step === stop.step) {
-      clearStop();
-      say("Thank you. That's the safe way. Carry on.", true);
-    }
+    const line = e.kind === "hint" ? P().hint(stepById(e.step)) : P().ask(stepById(e.step));
+    caption(e.kind, line);
+    say(line);
+  } else if (e.kind === "done" || e.kind === "override") {
     const next = state?.expected && stepById(state.expected);
-    caption("done", e.text);
-    if (next && !stop) say(`Good. Next: ${next.title}.`);
+    caption(e.kind, `${P().step} ${e.step} ✓ ${stepById(e.step).title}`);
+    if (stop && e.step === stop.step) { clearStop(); say(P().thanks, true); }
+    else if (next && !stop) say(P().next(next));
   } else if (e.kind === "complete") {
-    caption("complete", e.text);
-    say(e.text);
+    caption("complete", P().complete);
+    say(P().complete);
+    log.completedAt = e.t;
+    setTimeout(openReport, 2500);
   }
 }
 
 function renderBench(st) {
   const items = [["GPU", st.gpu], ["VRAM GB", st.vram_gb], ["frames/s", st.fps], ["SigLIP ms", st.siglip_ms],
-                 ["Gemma p50 ms", st.gemma_p50_ms], ["p95", st.gemma_p95_ms], ["calls", st.gemma_calls]];
+                 ["Gemma p50 ms", st.gemma_p50_ms], ["p95", st.gemma_p95_ms], ["calls", st.gemma_calls],
+                 ["voice", kokoro ? `Kokoro ${ttsMs ?? "…"} ms` : "browser"]];
   $("bench").replaceChildren(...items.filter(([, v]) => v !== undefined && v !== null)
     .map(([k, v]) => el("span", {}, `${k} `, el("b", { textContent: v }))));
 }
@@ -227,10 +387,14 @@ function connect() {
     const msg = JSON.parse(m.data);
     if (msg.type === "hello") {
       proc = msg.procedure; state = msg.state;
+      log = { procedure: proc.title, lang, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [] };
       $("ptitle").textContent = proc.title;
+      $("showReport").disabled = false;
       renderRail(); showStep(state.expected); renderBench(msg.stats);
-      say(`Let's begin. Step 1: ${proc.steps[0].title}. ${proc.steps[0].instruction}`);
+      say(P().begin(stepById(proc.steps[0].id)));
     } else if (msg.type === "tick") {
+      if (log.firstT === null && msg.t !== null) log.firstT = msg.t;
+      log.lastT = msg.t ?? log.lastT;
       const before = state?.expected;
       state = msg.state;
       msg.events.forEach(onEvent);
@@ -238,6 +402,7 @@ function connect() {
       if (state.expected !== before) showStep(state.expected);
       renderBench(msg.stats);
     } else if (msg.type === "reset") {
+      log = { ...log, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [] };
       clearStop(); caption("reset", "Session reset.");
     } else if (msg.type === "error") {
       caption("error", msg.message);
@@ -261,6 +426,14 @@ function sendFrame() {
 }
 
 async function start(srcUrl) {
+  lang = $("lang").value;
+  $("lang").disabled = true;
+  if (lang !== "en") {
+    caption("setup", "Translating the procedure…");
+    try { tr = await api(`/api/procedures/${encodeURIComponent(pid)}/translate?lang=${lang}`, { method: "POST" }); }
+    catch (e) { caption("error", `Translation failed, coaching in English: ${e.message}`); lang = "en"; tr = {}; }
+  }
+  document.documentElement.lang = lang;
   const v = $("src");
   if (srcUrl) {
     replay = true; v.srcObject = null; v.src = srcUrl; v.loop = false;
@@ -278,12 +451,137 @@ async function start(srcUrl) {
 $("start").onclick = () => start().catch((e) => caption("error", `Camera: ${e.message}`));
 $("file").onchange = () => $("file").files[0] && start(URL.createObjectURL($("file").files[0]));
 
+// ---------- "show me how": push-to-talk or typed question ----------
+let rec = null, chunks = [];
+async function askExpert(body, headers = {}) {
+  if (!proc) return caption("error", "Start the session first.");
+  caption("question", "…");
+  try {
+    const step = state?.expected ?? 0;
+    const r = await api(`/api/coach/${encodeURIComponent(pid)}/ask?step=${step}&lang=${lang}`, { method: "POST", body, headers });
+    log.questions.push({ t: log.lastT, step, question: r.question, answer: r.answer, show_step: r.show_step });
+    caption("answer", `“${r.question}” → ${r.answer}`);
+    say(r.answer, true);
+    if (r.show_step && !stop) playClip(stepById(r.show_step), false);
+  } catch (e) { caption("error", e.message); }
+}
+async function startTalk() {
+  if (rec) return;
+  try {
+    const mic = await navigator.mediaDevices.getUserMedia({ audio: true });
+    chunks = [];
+    rec = new MediaRecorder(mic);
+    rec.ondataavailable = (e) => chunks.push(e.data);
+    rec.onstop = () => {
+      mic.getTracks().forEach((t) => t.stop());
+      const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
+      rec = null;
+      if (blob.size > 2000) askExpert(blob, { "Content-Type": blob.type });
+    };
+    rec.start();
+    $("talk").classList.add("rec");
+    stopSpeech();
+  } catch (e) { caption("error", `Microphone: ${e.message}`); }
+}
+function endTalk() {
+  $("talk").classList.remove("rec");
+  if (rec && rec.state === "recording") rec.stop();
+}
+$("talk").onpointerdown = startTalk;
+$("talk").onpointerup = $("talk").onpointerleave = endTalk;
+$("typed").onkeydown = (e) => {
+  if (e.key === "Enter" && e.target.value.trim()) {
+    askExpert(JSON.stringify({ text: e.target.value.trim() }), { "Content-Type": "application/json" });
+    e.target.value = "";
+  }
+};
+
 document.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "INPUT") return;
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   if (e.code === "Space") { e.preventDefault(); clearStop(); }
+  if (e.key === "q" && !e.repeat) startTalk();
   if (e.key === "n" && ws?.readyState === 1) ws.send(JSON.stringify({ cmd: "advance" }));
-  if (e.key === "r" && ws?.readyState === 1) { speechSynthesis.cancel(); ws.send(JSON.stringify({ cmd: "reset" })); }
+  if (e.key === "r" && ws?.readyState === 1) { stopSpeech(); ws.send(JSON.stringify({ cmd: "reset" })); }
+  if (e.key === "Escape") $("report").classList.remove("open");
 });
+document.addEventListener("keyup", (e) => { if (e.key === "q") endTalk(); });
+
+// ---------- session report ----------
+function buildReport() {
+  const start = log.firstT ?? 0, end = log.completedAt ?? log.lastT ?? start;
+  const ev = log.events;
+  const doneAt = {}, flagged = {};
+  for (const e of ev) {
+    if ((e.kind === "done" || e.kind === "override") && !(e.step in doneAt)) doneAt[e.step] = e;
+    if (e.kind === "interrupt" || e.kind === "hint") (flagged[e.step] ||= []).push(e);
+  }
+  let prevT = start;
+  const steps = proc.steps.map((s) => {
+    const d = doneAt[s.id];
+    const row = {
+      id: s.id, title: s.title, safety_critical: s.safety_critical,
+      seconds: d ? Math.max(0, d.t - prevT) : null,
+      expert_seconds: s.expert_clip ? s.expert_clip[1] - s.expert_clip[0] : null,
+      status: !d ? "not done" : d.kind === "override" ? "marked by presenter" : flagged[s.id] ? "skipped, then done" : "done",
+      flags: (flagged[s.id] || []).length,
+    };
+    if (d) prevT = d.t;
+    return row;
+  });
+  const interrupts = ev.filter((e) => e.kind === "interrupt");
+  const complete = ev.some((e) => e.kind === "complete");
+  const overrides = ev.filter((e) => e.kind === "override").length;
+  return {
+    procedure: log.procedure, language: log.lang, started: log.started, duration_s: Math.round(end - start),
+    expert_duration_s: Math.round(proc.steps.reduce((a, s) => a + (s.expert_clip ? s.expert_clip[1] - s.expert_clip[0] : 0), 0)),
+    verdict: complete && interrupts.length === 0 && overrides === 0 ? "Competent" : "Needs another supervised run",
+    complete, safety_stops: interrupts.length, hints: ev.filter((e) => e.kind === "hint").length,
+    unsure: ev.filter((e) => e.kind === "ask").length, presenter_overrides: overrides,
+    steps, mistakes: interrupts.map((e) => ({ t: Math.round(e.t - start), skipped_step: e.step, attempted_step: e.at_step })),
+    questions: log.questions,
+  };
+}
+
+function openReport() {
+  if (!proc || !log) return;
+  const r = buildReport();
+  const sec = (x) => (x === null ? "—" : `${Math.round(x)} s`);
+  const kpi = (v, label) => el("div", { className: "kpi" }, el("b", { textContent: v }), el("span", { textContent: label }));
+  const tbody = el("tbody", {}, ...r.steps.map((s) => el("tr", {},
+    el("td", { textContent: `${s.id}${s.safety_critical ? " ⚠" : ""}` }),
+    el("td", { textContent: s.title }),
+    el("td", { className: "num", textContent: sec(s.seconds) }),
+    el("td", { className: "num", textContent: sec(s.expert_seconds) }),
+    el("td", { className: s.status === "done" ? "" : "bad", textContent: s.status }))));
+  const download = el("button", { textContent: "Download JSON", onclick: () => {
+    const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify(r, null, 2)], { type: "application/json" })),
+                        download: `training-record-${pid}-${r.started.slice(0, 19).replace(/[:T]/g, "-")}.json` });
+    a.click();
+  } });
+  const sheet = el("div", { className: "sheet" },
+    el("h2", { textContent: "Training record" }),
+    el("div", { className: "sub", textContent: `${r.procedure} · ${new Date(r.started).toLocaleString()} · coached in ${r.language === "it" ? "Italian" : "English"}` }),
+    el("div", { className: `verdict ${r.verdict === "Competent" ? "pass" : "fail"}`, textContent: r.verdict }),
+    el("div", { className: "kpis" },
+      kpi(`${r.duration_s} s`, `total time (expert: ${r.expert_duration_s} s)`),
+      kpi(r.safety_stops, "safety stops"), kpi(r.hints, "order hints"),
+      kpi(r.questions.length, "questions asked"), kpi(r.presenter_overrides, "presenter overrides")),
+    el("table", {}, el("thead", {}, el("tr", {}, ...["Step", "", "Trainee", "Expert", "Status"].map((h) => el("th", { textContent: h })))), tbody),
+    el("h3", { textContent: "Mistakes caught" }),
+    r.mistakes.length ? el("ul", {}, ...r.mistakes.map((m) => el("li", {
+      textContent: `${m.t} s: started step ${m.attempted_step} before step ${m.skipped_step} (${proc.steps.find((s) => s.id === m.skipped_step).title})` })))
+      : el("p", { textContent: "None." }),
+    el("h3", { textContent: "Questions" }),
+    r.questions.length ? el("ul", {}, ...r.questions.map((q) => el("li", { textContent: `“${q.question}” → ${q.answer}` })))
+      : el("p", { textContent: "None." }),
+    el("div", { className: "actions" },
+      el("button", { textContent: "Print / PDF", onclick: () => window.print() }), download,
+      el("button", { textContent: "Close", onclick: () => $("report").classList.remove("open") })));
+  $("report").replaceChildren(sheet);
+  $("report").classList.add("open");
+}
+$("showReport").onclick = openReport;
+$("report").onclick = (e) => { if (e.target === $("report")) $("report").classList.remove("open"); };
 
 if (!pid) caption("setup", "Open this page with ?id=<procedure id> (approve the procedure in the Author view first).");
 // ?src=/files/<id>/<run>.mp4 replays a recording already on the server (the demo's fallback). Same-origin only.

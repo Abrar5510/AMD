@@ -31,10 +31,12 @@ def frames(video, fps, start=0.0, end=None):
         yield start + i / fps, chunk + b"\xff\xd9"
 
 
-def audio(video, sr=16000):
-    """Mono float32 samples at sr (what Whisper wants). Empty array if the video has no audio track."""
-    r = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(video), "-vn", "-ac", "1", "-ar", str(sr),
-                        "-f", "f32le", "-"], capture_output=True)
+def audio(src, sr=16000):
+    """A media file path or raw bytes (any format ffmpeg reads) -> mono float32 samples at sr, for Whisper.
+    Empty array if there is no audio."""
+    raw = isinstance(src, bytes)
+    r = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", "-" if raw else str(src), "-vn", "-ac", "1",
+                        "-ar", str(sr), "-f", "f32le", "-"], input=src if raw else None, capture_output=True)
     return np.frombuffer(r.stdout, np.float32) if r.returncode == 0 else np.zeros(0, np.float32)
 
 
