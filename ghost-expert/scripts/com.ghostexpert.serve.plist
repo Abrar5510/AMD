@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- LaunchDaemon: serve_mac.sh (app + quick tunnel + Pages redirect) as abrar, restarted if it ever exits. -->
+<plist version="1.0">
+<dict>
+	<key>Label</key><string>com.ghostexpert.serve</string>
+	<key>UserName</key><string>abrar</string>
+	<key>ProgramArguments</key>
+	<array><string>/Users/abrar/projects/AMD/ghost-expert/scripts/serve_mac.sh</string></array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key><string>/Users/abrar</string>
+		<key>PATH</key><string>/Users/abrar/.nvm/versions/node/v24.16.0/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>RunAtLoad</key><true/>
+	<key>KeepAlive</key><true/>
+	<key>ThrottleInterval</key><integer>10</integer>
+	<key>StandardOutPath</key><string>/Users/abrar/Library/Logs/ghost-expert.log</string>
+	<key>StandardErrorPath</key><string>/Users/abrar/Library/Logs/ghost-expert.log</string>
+</dict>
+</plist>

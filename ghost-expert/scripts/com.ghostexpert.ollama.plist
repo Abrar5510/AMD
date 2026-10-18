@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- LaunchDaemon: Ollama as abrar, runs with nobody logged in. Replaces the brew LaunchAgent (homebrew.mxcl.ollama). -->
+<plist version="1.0">
+<dict>
+	<key>Label</key><string>com.ghostexpert.ollama</string>
+	<key>UserName</key><string>abrar</string>
+	<key>ProgramArguments</key>
+	<array><string>/opt/homebrew/opt/ollama/bin/ollama</string><string>serve</string></array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key><string>/Users/abrar</string>
+		<key>OLLAMA_FLASH_ATTENTION</key><string>1</string>
+		<key>OLLAMA_KV_CACHE_TYPE</key><string>q8_0</string>
+	</dict>
+	<key>RunAtLoad</key><true/>
+	<key>KeepAlive</key><true/>
+	<key>StandardOutPath</key><string>/Users/abrar/Library/Logs/ghost-expert-ollama.log</string>
+	<key>StandardErrorPath</key><string>/Users/abrar/Library/Logs/ghost-expert-ollama.log</string>
+</dict>
+</plist>
