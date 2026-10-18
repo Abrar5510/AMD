@@ -80,7 +80,7 @@ def speak(text, lang="en"):
     """Text -> 16-bit mono WAV bytes at 24 kHz."""
     pipe = _kokoro(lang)
     with torch.inference_mode():
-        parts = [r.audio for r in pipe(text, voice=KOKORO_VOICES[lang][1], speed=1.05) if r.audio is not None]
+        parts = [r.audio for r in pipe(text, voice=KOKORO_VOICES[lang][1], speed=1.0) if r.audio is not None]
     samples = torch.cat([torch.as_tensor(a).flatten().float().cpu() for a in parts]).numpy() if parts else np.zeros(1)
     buf = io.BytesIO()
     with wave.open(buf, "wb") as w:

@@ -8,7 +8,7 @@ Four models on one AMD Instinct GPU: Gemma 3 vision (vLLM on ROCm), SigLIP, Whis
 
 1. **Author (0:15).** The expert's narrated video goes in. Whisper, SigLIP and Gemma cut it into 8 steps with keyframes, a visual check and a safety flag on each. The expert fixes what's wrong and approves. *The expert owns the procedure; the AI only drafts it.*
 2. **Coach (0:35).** A judge does the lockout/tagout job under a top-down camera. Steps turn green as Gemma confirms them, and the voice says what's next.
-3. **The stop (1:10).** The judge reaches for the cover screws without testing that the machine is dead. The whole screen goes red, the voice says *"Stop. You haven't done step 4"*, the banner says what the coach saw, and the expert's own hands doing step 4 fill half the screen until the judge does it.
+3. **The stop (1:10).** The judge reaches for the cover screws without testing that the machine is dead. The whole screen goes red, the voice says *"Stop. Hold on, you skipped step 4"*, the banner says what the coach saw, and the expert's own hands doing step 4 fill half the screen until the judge does it.
 4. **"Where does the filter go?" (1:40).** Hold to ask. The answer is spoken and the expert's clip of that moment plays.
 5. **Training record (2:05).** Time per step against the expert, the mistakes caught, a *Competent* or *Needs another run* verdict, and a printable PDF.
 

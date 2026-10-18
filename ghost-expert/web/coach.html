@@ -295,30 +295,32 @@ let lang = "en", tr = {};         // tr: step id -> {title, instruction, visual_
 let log = null;                   // session record for the report
 
 // ---------- spoken phrases per language (step texts come from Gemma's translation) ----------
+// Written to be heard, not read: step titles are imperatives, so they slot into a sentence lower-cased.
+const low = (t) => t.charAt(0).toLowerCase() + t.slice(1);
 const PHRASES = {
   en: {
     voice: "en-US",
-    begin: (s) => `Let's begin. Step ${s.id}: ${s.title}. ${s.instruction}`,
-    next: (s) => `Good. Next: ${s.title}.`,
-    stop: (b) => `Stop. You haven't done step ${b.id}: ${b.title}. ${b.instruction} Here's how the expert does it.`,
+    begin: (s) => `Okay, let's get started. First, ${low(s.title)}. ${s.instruction}`,
+    next: (s) => `Nice. Now, ${low(s.title)}.`,
+    stop: (b) => `Stop. Hold on, you skipped step ${b.id}. ${b.instruction} Watch how it's done.`,
     banner: (b) => `Stop. Do step ${b.id} first: ${b.title}`,
-    hint: (b) => `Before this, step ${b.id}: ${b.title}.`,
-    ask: (s) => `I can't quite see. Can you show me: ${s.visual_check}?`,
-    thanks: "Thank you. That's the safe way. Carry on.",
-    complete: "Procedure complete. Well done.",
+    hint: (b) => `Hang on, step ${b.id} comes first. ${b.title}.`,
+    ask: (s) => `I can't quite see. Can you hold it up so I can check that ${s.visual_check}?`,
+    thanks: "Thanks, that's the safe way. Carry on.",
+    complete: "And that's it, procedure complete. Nice work.",
     doneWhen: "Done when", watch: (id) => `Expert · step ${id}`, step: "Step", of: "of", critical: "Safety-critical",
     finished: "Procedure complete", allDone: "Every step confirmed.", saw: "Coach saw:",
   },
   it: {
     voice: "it-IT",
-    begin: (s) => `Iniziamo. Passo ${s.id}: ${s.title}. ${s.instruction}`,
-    next: (s) => `Bene. Prossimo: ${s.title}.`,
-    stop: (b) => `Fermo. Non hai fatto il passo ${b.id}: ${b.title}. ${b.instruction} Guarda come lo fa l'esperto.`,
+    begin: (s) => `Allora, cominciamo. Per prima cosa, ${low(s.title)}. ${s.instruction}`,
+    next: (s) => `Bene. Adesso, ${low(s.title)}.`,
+    stop: (b) => `Fermo. Aspetta, hai saltato il passo ${b.id}. ${b.instruction} Guarda come si fa.`,
     banner: (b) => `Fermo. Prima il passo ${b.id}: ${b.title}`,
-    hint: (b) => `Prima di questo, passo ${b.id}: ${b.title}.`,
-    ask: (s) => `Non vedo bene. Puoi mostrarmi: ${s.visual_check}?`,
-    thanks: "Grazie. Così è sicuro. Continua.",
-    complete: "Procedura completata. Ottimo lavoro.",
+    hint: (b) => `Aspetta, prima viene il passo ${b.id}. ${b.title}.`,
+    ask: (s) => `Non vedo bene. Puoi avvicinarlo, così controllo che ${s.visual_check}?`,
+    thanks: "Grazie, così è sicuro. Continua pure.",
+    complete: "Ecco fatto, procedura completata. Ottimo lavoro.",
     doneWhen: "Fatto quando", watch: (id) => `Esperto · passo ${id}`, step: "Passo", of: "di", critical: "Sicurezza",
     finished: "Procedura completata", allDone: "Tutti i passi confermati.", saw: "Il coach ha visto:",
   },
@@ -383,12 +385,18 @@ function playUrl(url) {
   });
 }
 
+// The default system voice is the robotic one: prefer the device's neural voices when it has them.
+function bestVoice() {
+  const vs = speechSynthesis.getVoices().filter((v) => v.lang.replace("_", "-").startsWith(P().voice.slice(0, 2)));
+  return vs.find((v) => /natural|neural|premium|enhanced/i.test(v.name)) || vs.find((v) => /google|online/i.test(v.name)) || null;
+}
+
 function browserSay(text) {
   return new Promise((done) => {
     if (!("speechSynthesis" in window)) return done();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.05;
     u.lang = P().voice;
+    u.voice = bestVoice();
     u.onend = u.onerror = done;
     speechSynthesis.speak(u);
   });
