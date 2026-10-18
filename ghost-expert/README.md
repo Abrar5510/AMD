@@ -144,7 +144,11 @@ The rule engine has its own check with no GPU or models: `python -m tests.test_c
 2. **Expert edit:** open `http://<box>:8080/?id=loto-filter`. Fix titles and checks, flip ⚠, move a boundary to the playhead, split, merge or delete steps. Every change is saved and counted ("Expert edits: 2"; that's the Gate 3 number).
 3. **Approve:** writes `procedure.json`, keyframes and `refs.npy`, which is everything the coach needs. No separate `build_refs` step is required.
 
-In the browser: pick an id, choose the video, click **Upload and draft** (or pick an existing draft below the form), then select a step to edit it and click **Approve**. **Open coach →** appears once it's approved. From the command line on the box:
+In the browser: pick an id, choose the video, click **Upload and draft** (or pick an existing draft below the form), then select a step to edit it and click **Approve**. **Open coach →** appears once it's approved.
+
+**Try it yourself:** `/?try` (plus `&token=...` when `APP_TOKEN` is set) is the same flow for a visitor: it hides the id and other procedures and gives each visitor their own `try-…` id, so an investor can film anything on their phone and be coached through it.
+
+From the command line on the box:
 ```bash
 cp my-expert-video.mp4 procedures/loto-filter/expert.mp4
 docker compose exec app python -m app.author procedures/loto-filter
@@ -181,7 +185,8 @@ Open `http://<box>:8080/coach?id=loto-filter&token=<APP_TOKEN>` on the demo lapt
 
 - **Ask the expert:** hold **Hold to ask** (or hold `Q`) and ask out loud, e.g. "where does the new filter go?". Whisper transcribes the question. Gemma answers in at most two sentences, grounded in the procedure and the expert's narration from `draft.json`, and names the step whose clip shows the answer. The voice speaks the answer and the expert's clip of that step plays once (blue border). The text box next to the button is the fallback for a noisy room.
 - **Bilingual:** pick **Italiano** before Start. Gemma translates the step texts once and caches them in `procedure.it.json` until the next approval. Spoken lines come from a small phrase table per language, so they never depend on a live model. Questions are answered in the coaching language.
-- **Training record:** opens by itself when the procedure completes, or anytime via **Training record**. It shows the verdict (*Competent* only with zero safety stops and zero presenter overrides), trainee vs expert time per step, the mistakes caught, and the questions asked. **Print / PDF** and **Download JSON** are on the record.
+- **Training record:** opens by itself when the procedure completes, or anytime via **Training record**. It shows the verdict (*Competent* only with zero safety stops and zero presenter overrides), trainee vs expert time per step, the mistakes caught, and the questions asked. The trainee's name goes at the top, and the verdict stays *Pending supervisor sign-off* until a supervisor signs it (the printout has a blank signature line if nobody has). **Print / PDF**, **Download JSON** and **Download xAPI** (statements for the plant's LMS: one per confirmed step and one for the procedure, with the supervisor as instructor) are on the record.
+- **Phones and tablets:** the coach asks for the rear camera, so a phone propped over the work area is enough.
 
 Endpoints: `POST /api/coach/<id>/ask?step=N&lang=en|it` (body: audio, or JSON `{"text": ...}`) and `POST /api/procedures/<id>/translate?lang=it`. Both need `X-App-Token` when `APP_TOKEN` is set.
 

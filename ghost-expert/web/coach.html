@@ -164,8 +164,10 @@
   @media (max-width: 860px) {
     #app { height: auto; min-height: 100dvh; }
     .top { padding: 12px 16px; } .top .sep, #ptitle { display: none; } #rail { padding: 0 16px 14px; } main { padding: 0 16px 16px; grid-template-columns: minmax(0, 1fr); }
-    #live { aspect-ratio: 16 / 10; } .side { overflow: visible; } .status { padding: 10px 16px; }
+    #live { aspect-ratio: 4 / 3; } .side { overflow: visible; } .status { padding: 10px 16px; }
+    #conn { font-size: 0; gap: 0; }   /* the dot alone: room for the Training record button */
     #banner { font-size: 19px; padding: 12px 16px; } #caption { font-size: 15px; bottom: 12px; }
+    body.stop #caption { display: none; }   /* the banner and the voice already say it */
     body.stop main { grid-template-columns: minmax(0, 1fr); } #seen { display: none; }
   }
 
@@ -197,13 +199,23 @@
   .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; padding-top: 8px; }
   .sheet .actions .btn { border-color: #dcd9d1; color: #17171a; }
   .sheet .actions .btn:hover { background: #f0eee8; }
-  .sheet .actions .btn.dark { background: #17171a; color: #fbfaf7; border-color: #17171a; }
+  .sheet .actions .btn.dark, .signoff .btn.dark { background: #17171a; color: #fbfaf7; border-color: #17171a; }
+  .sheet input { font-size: 14px; color: #17171a; background: #fff; border: 1px solid #dcd9d1; border-radius: 8px; padding: 8px 11px; min-width: 0; }
+  .sheet input:read-only { border-color: transparent; background: none; padding-left: 0; }
+  .sheet .trainee { display: block; width: min(320px, 100%); margin: 0 0 18px; font-size: 16px; font-weight: 500; }
+  .pending { margin-left: 10px; font-size: 13px; color: #8a6d12; }
+  .signoff { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 18px 0 22px; border-top: 1px solid #e6e3dc; }
+  .signoff input { flex: 1 1 200px; }
+  .signoff.signed { color: #146c43; font-weight: 500; }
+  .printonly { display: none; }
   @media (max-width: 600px) { .sheet { padding: 28px 20px; } }
   @media print {
     body > *:not(#report) { display: none !important; }
     #report { position: static; display: block; background: none; padding: 0; backdrop-filter: none; }
     .sheet { width: 100%; padding: 0; }
-    .sheet .actions { display: none; }
+    .sheet .actions, .noprint { display: none !important; }
+    .printonly { display: block; }
+    .sheet input { border: 0; padding-left: 0; }
   }
 </style>
 </head>
@@ -535,7 +547,8 @@ function connect() {
     const msg = JSON.parse(m.data);
     if (msg.type === "hello") {
       proc = msg.procedure; state = msg.state;
-      log = { procedure: proc.title, lang, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [] };
+      log = { procedure: proc.title, lang, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [],
+              trainee: "", signoff: null };
       $("ptitle").textContent = proc.title;
       $("showReport").disabled = false;
       renderRail(); showStep(state.expected); renderBench(msg.stats);
@@ -551,7 +564,7 @@ function connect() {
       renderSeen(state.seen);
       renderBench(msg.stats);
     } else if (msg.type === "reset") {
-      log = { ...log, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [] };
+      log = { ...log, started: new Date().toISOString(), firstT: null, completedAt: null, events: [], questions: [], signoff: null };
       clearStop(); caption("reset", "Session reset.");
     } else if (msg.type === "error") {
       caption("error", msg.message);
@@ -588,7 +601,8 @@ async function start(srcUrl) {
     replay = true; v.srcObject = null; v.src = srcUrl; v.loop = false;
   } else {
     replay = false;
-    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+    // phones and tablets: the rear camera faces the work; laptops ignore facingMode
+    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: 1280, height: 720 }, audio: false });
   }
   await v.play();
   $("live").classList.toggle("replay", replay);
@@ -672,7 +686,7 @@ function buildReport() {
     const d = doneAt[s.id];
     const row = {
       id: s.id, title: s.title, safety_critical: s.safety_critical,
-      seconds: d ? Math.max(0, d.t - prevT) : null,
+      seconds: d ? Math.max(0, d.t - prevT) : null, done_at_s: d ? Math.max(0, d.t - start) : null,
       expert_seconds: s.expert_clip ? s.expert_clip[1] - s.expert_clip[0] : null,
       status: !d ? "not done" : d.kind === "override" ? "marked by presenter" : flagged[s.id] ? "skipped, then done" : "done",
       flags: (flagged[s.id] || []).length,
@@ -684,7 +698,8 @@ function buildReport() {
   const complete = ev.some((e) => e.kind === "complete");
   const overrides = ev.filter((e) => e.kind === "override").length;
   return {
-    procedure: log.procedure, language: log.lang, started: log.started, duration_s: Math.round(end - start),
+    procedure: log.procedure, procedure_id: pid, trainee: log.trainee.trim() || null, signoff: log.signoff,
+    language: log.lang, started: log.started, duration_s: Math.round(end - start),
     expert_duration_s: Math.round(proc.steps.reduce((a, s) => a + (s.expert_clip ? s.expert_clip[1] - s.expert_clip[0] : 0), 0)),
     verdict: complete && interrupts.length === 0 && overrides === 0 ? "Competent" : "Needs another supervised run",
     complete, safety_stops: interrupts.length, hints: ev.filter((e) => e.kind === "hint").length,
@@ -694,9 +709,58 @@ function buildReport() {
   };
 }
 
+// xAPI statements for the plant's LMS: one per confirmed step, one for the procedure, the supervisor as instructor.
+// ponytail: a file to import; POST to the customer's LRS when one asks for it
+function xapi(r) {
+  const base = `${location.origin}/procedures/${encodeURIComponent(pid)}`;
+  const agent = (name) => ({ objectType: "Agent", name, account: { homePage: location.origin, name } });
+  const verb = (v) => ({ id: `http://adlnet.gov/expapi/verbs/${v}`, display: { "en-US": v } });
+  const at = (s) => new Date(Date.parse(r.started) + s * 1000).toISOString();
+  const ext = (k) => `${location.origin}/xapi/${k}`;
+  const context = { language: r.language, ...(r.signoff && { instructor: agent(r.signoff.name) }) };
+  const competent = r.verdict === "Competent";
+  return [
+    ...r.steps.filter((s) => s.done_at_s !== null).map((s) => ({
+      actor: agent(r.trainee), verb: verb("completed"), timestamp: at(s.done_at_s),
+      object: { objectType: "Activity", id: `${base}/steps/${s.id}`, definition: { name: { "en-US": s.title } } },
+      result: { completion: true, duration: `PT${Math.round(s.seconds)}S`, extensions: { [ext("status")]: s.status } },
+      context: { ...context, contextActivities: { parent: [{ objectType: "Activity", id: base }] } },
+    })),
+    {
+      actor: agent(r.trainee), verb: verb(!r.complete ? "attempted" : competent ? "passed" : "failed"), timestamp: at(r.duration_s),
+      object: { objectType: "Activity", id: base, definition: { name: { "en-US": r.procedure } } },
+      result: { success: competent, completion: r.complete, duration: `PT${r.duration_s}S`,
+                extensions: { [ext("safety-stops")]: r.safety_stops, [ext("mistakes")]: r.mistakes, [ext("signed-off")]: !!r.signoff } },
+      context,
+    },
+  ];
+}
+
+function save(obj, name) {
+  const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" })), download: name });
+  a.click();
+}
+
 function openReport() {
   if (!proc || !log) return;
   const r = buildReport();
+  const stamp = `${pid}-${r.started.slice(0, 19).replace(/[:T]/g, "-")}`;
+  const trainee = el("input", { className: "trainee", placeholder: "Trainee name", value: log.trainee, readOnly: !!log.signoff,
+                                ariaLabel: "Trainee name", oninput: (e) => { log.trainee = e.target.value; } });
+  const needTrainee = () => { if (log.trainee.trim()) return false; trainee.focus(); trainee.placeholder = "Trainee name (required)"; return true; };
+  const supervisor = el("input", { placeholder: "Supervisor name", ariaLabel: "Supervisor name" });
+  const signoff = r.signoff
+    ? el("div", { className: "signoff signed", textContent: `Signed off by ${r.signoff.name}, ${new Date(r.signoff.at).toLocaleString()}` })
+    : el("div", { className: "signoff" },
+        el("span", { className: "noprint", style: "display:contents" }, supervisor,
+          el("button", { className: "btn dark", textContent: "Sign off", onclick: () => {
+            const name = supervisor.value.trim();
+            if (needTrainee()) return;
+            if (!name) return supervisor.focus();
+            log.signoff = { name, at: new Date().toISOString() };
+            openReport();
+          } })),
+        el("span", { className: "printonly", textContent: "Supervisor: ______________________    Signature: ______________________    Date: ____________" }));
   const sec = (x) => (x === null ? "—" : `${Math.round(x)} s`);
   const kpi = (v, label) => el("div", { className: "kpi" }, el("b", { textContent: v }), el("span", { textContent: label }));
   const tbody = el("tbody", {}, ...r.steps.map((s) => el("tr", {},
@@ -705,16 +769,16 @@ function openReport() {
     el("td", { className: "num", textContent: sec(s.seconds) }),
     el("td", { className: "num", textContent: sec(s.expert_seconds) }),
     el("td", { className: s.status === "done" ? "" : "bad", textContent: s.status }))));
-  const download = el("button", { className: "btn", textContent: "Download JSON", onclick: () => {
-    const a = el("a", { href: URL.createObjectURL(new Blob([JSON.stringify(r, null, 2)], { type: "application/json" })),
-                        download: `training-record-${pid}-${r.started.slice(0, 19).replace(/[:T]/g, "-")}.json` });
-    a.click();
-  } });
+  const download = el("button", { className: "btn", textContent: "Download JSON", onclick: () => save(r, `training-record-${stamp}.json`) });
+  const downloadXapi = el("button", { className: "btn", textContent: "Download xAPI",
+    onclick: () => { if (!needTrainee()) save(xapi(buildReport()), `xapi-${stamp}.json`); } });
   const sheet = el("div", { className: "sheet" },
     el("div", { className: "eyebrow", textContent: "Training record" }),
     el("h2", { textContent: r.procedure }),
     el("div", { className: "sub", textContent: `${new Date(r.started).toLocaleString()} · coached in ${r.language === "it" ? "Italian" : "English"}` }),
-    el("div", { className: `verdict ${r.verdict === "Competent" ? "pass" : "fail"}`, textContent: r.verdict }),
+    trainee,
+    el("div", {}, el("span", { className: `verdict ${r.verdict === "Competent" ? "pass" : "fail"}`, textContent: r.verdict }),
+      r.signoff ? "" : el("span", { className: "pending", textContent: "Pending supervisor sign-off" })),
     el("div", { className: "kpis" },
       kpi(`${r.duration_s} s`, `total time (expert ${r.expert_duration_s} s)`),
       kpi(r.safety_stops, "safety stops"), kpi(r.hints, "order hints"),
@@ -727,8 +791,9 @@ function openReport() {
     el("h3", { textContent: "Questions" }),
     r.questions.length ? el("ul", {}, ...r.questions.map((q) => el("li", { textContent: `“${q.question}” → ${q.answer}` })))
       : el("p", { textContent: "None." }),
+    signoff,
     el("div", { className: "actions" },
-      el("button", { className: "btn", textContent: "Close", onclick: () => $("report").classList.remove("open") }), download,
+      el("button", { className: "btn", textContent: "Close", onclick: () => $("report").classList.remove("open") }), download, downloadXapi,
       el("button", { className: "btn dark", textContent: "Print / PDF", onclick: () => window.print() })));
   $("report").replaceChildren(sheet);
   $("report").classList.add("open");

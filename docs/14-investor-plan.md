@@ -17,10 +17,10 @@ The positioning for every phase: **Ghost Expert cuts the time it takes a new hir
 
 What exists: multi-procedure storage (`GET /api/procedures`), upload → draft → approve → coach, replay mode, presenter reset (`R`), the training record with PDF and JSON.
 
-- [ ] **Phone and tablet camera.** `coach.html` asks for any camera, so a phone opens the selfie camera. Ask for the rear camera (`facingMode: "environment"`) and check the coach layout at phone width.
-- [ ] **Supervisor sign-off.** The training record gets a supervisor name, date and "Signed off" action. The verdict reads "Pending sign-off" until it is signed, and the PDF and JSON include it.
-- [ ] **LMS export.** A "Download xAPI" button on the training record that writes xAPI statements (completed, step times, mistakes, verdict). SCORM packaging waits until a customer asks.
-- [ ] **"Try it yourself" mode.** One guided path for a visitor: upload a phone video → watch the draft appear → approve → get coached. Each visitor gets their own random procedure id so demos never overwrite each other. End-to-end testing needs the GPU box (roadmap).
+- [x] **Phone and tablet camera.** `coach.html` asks for any camera, so a phone opens the selfie camera. Ask for the rear camera (`facingMode: "environment"`) and check the coach layout at phone width.
+- [x] **Supervisor sign-off.** The training record gets a supervisor name, date and "Signed off" action. The coach's verdict shows "Pending supervisor sign-off" until it is signed. The record takes the trainee's name, and the PDF, JSON and xAPI include both names.
+- [x] **LMS export.** A "Download xAPI" button on the training record that writes xAPI statements (completed, step times, mistakes, verdict). SCORM packaging waits until a customer asks.
+- [x] **"Try it yourself" mode.** One guided path for a visitor: upload a phone video → watch the draft appear → approve → get coached. Each visitor gets their own random procedure id so demos never overwrite each other. End-to-end testing needs the GPU box (roadmap).
 
 ## Phase C — Investor materials
 

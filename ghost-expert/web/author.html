@@ -429,8 +429,21 @@ function card(s, i) {
   return c;
 }
 
-listIds();
-if (pid) open(pid);
+// ?try: a visitor films anything, gets their own procedure id, and never sees anyone else's.
+// ponytail: try-* folders pile up on the box; prune old ones by date when disk matters
+if (params.has("try")) {
+  document.querySelector(".start .eyebrow").textContent = "Try it yourself";
+  document.querySelector(".start h1").textContent = "Film something you know how to do.";
+  document.querySelector(".start .lede").textContent = "Talk through it as you go. Ghost Expert drafts the steps, you check them, then it coaches you doing it.";
+  $("filename").textContent = "Choose your video";
+  $("pid").parentElement.style.display = "none";
+  $("home").href = `./?try${tq ? `&${tq}` : ""}`;
+  if (!pid) $("pid").value = `try-${Math.random().toString(36).slice(2, 10)}`;
+  else open(pid);
+} else {
+  listIds();
+  if (pid) open(pid);
+}
 </script>
 </body>
 </html>
