@@ -1,6 +1,6 @@
 # Ghost Expert
 
-**Your best technician retires next year, and everything she knows leaves with her. She films one job, once. Ghost Expert watches every new hire do it, coaches them out loud, and stops them before they get hurt.**
+**Your best technician retires next year, and everything she knows leaves with her. She films one job, once. Ghost Expert watches every new hire do it, coaches them out loud, flags the step they skip, and hands their supervisor a training record.**
 
 Four models on one AMD Instinct GPU: Gemma 3 vision (vLLM on ROCm), SigLIP, Whisper, Kokoro. Full plan: [../docs/13-ghost-expert-build-plan.md](../docs/13-ghost-expert-build-plan.md).
 
@@ -27,9 +27,9 @@ Stress test with a deliberately bad model, where Gemma is confidently wrong 5% o
 | | Skipped step 4 caught | Correct trainees falsely stopped | Stop latency p50 |
 |---|---|---|---|
 | One Gemma answer decides | 98% | **14%** | 0.8 s |
-| Ghost Expert rule engine | 98% | **0%** | 1.6 s |
+| Ghost Expert rule engine | 92% | **0%** | 1.6 s |
 
-That's a simulation of the design, not a measurement of Gemma. The filmed numbers are below.
+The rule engine gives up 6 points of catch rate to remove every false stop, because a coach that wrongly stops correct trainees soon gets ignored. That's a simulation of the design, not a measurement of Gemma. The filmed numbers are below.
 
 ## Results
 
@@ -38,7 +38,7 @@ That's a simulation of the design, not a measurement of Gemma. The filmed number
 | Verify accuracy, 4 frames + keyframe (Gate 1) | _pending: run on the AMD box_ | `scripts.eval_verify` |
 | Skip-4 caught / false alarms on clean runs (Gate 2) | _pending_ | `scripts.run_eval` |
 | Gemma 3 12B verify latency p50 / p95, MI300X | _pending_ | `scripts.smoke_gemma` |
-| Rule engine under a 5%-wrong model | 98% caught, 0% false stops | `scripts.sim_eval` |
+| Rule engine under a 5%-wrong model | 92% caught, 0% false stops | `scripts.sim_eval` |
 
 Save each run's output for the slides, e.g. `... python -m scripts.run_eval eval/runs.csv | tee eval/results.md`.
 
