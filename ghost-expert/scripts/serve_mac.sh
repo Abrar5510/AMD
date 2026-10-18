@@ -21,7 +21,12 @@ while :; do
   cloudflared tunnel --no-autoupdate --url "http://localhost:$PORT" 2>&1 | while read -r line; do
     echo "$line" | grep -E "ERR|failed" || true
     url=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' <<<"$line" | grep -v '//api\.' || true)
-    if [ -n "$url" ]; then echo "PUBLIC: $url/?token=$APP_TOKEN" | tee .public-url; fi
+    if [ -n "$url" ]; then
+      echo "PUBLIC: $url/?token=$APP_TOKEN" | tee .public-url
+      # ghost-expert.pages.dev/app follows the current tunnel. The token is in it on purpose: anyone with the link can author.
+      echo "/app $url/?token=$APP_TOKEN 302" > ../submission/_redirects
+      npx -y wrangler@3 pages deploy ../submission --project-name ghost-expert --branch main --commit-dirty=true >/dev/null 2>&1 &
+    fi
   done || true
   echo "tunnel exited, retrying in 5 s"; sleep 5
 done
