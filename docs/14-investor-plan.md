@@ -24,9 +24,11 @@ What exists: multi-procedure storage (`GET /api/procedures`), upload → draft �
 
 ## Phase C — Investor materials
 
-- [ ] **Pitch deck draft**, 10 slides: problem, demo, how it works, numbers, pilot, market, competition, moat, team, ask. Slides that need real numbers carry a visible `[PENDING: filmed eval]` placeholder.
-- [ ] **Competition one-pager.** Augmentir, Dozuki, Poka, SwipeGuide, Tulip (digital work instructions), Drishti and Retrocausal (vision on the line). Ghost Expert's difference: the AI drafts the procedure from one video, and it checks each step live.
-- [ ] **Market sizing** with cited sources: frontline training and connected-worker spend, bottom-up from plants × stations × price.
-- [ ] **Customer interview script** for plant training, EHS and quality managers: onboarding cost, time to competence, how sign-offs are documented today, what they would pay to halve it.
-- [ ] **Pilot proposal one-pager** and **LOI template**, ready to send after the first good conversation.
-- [ ] **Demo film v2: script and shot list**, so filming day is one session. Order: problem → real expert video drafted into steps → trainee coached and flagged → training record → real numbers. Same HeyGen voice, no music.
+- [x] **Pitch deck draft**, 10 slides: problem, demo, how it works, numbers, pilot, market, competition, moat, team, ask. Slides that need real numbers carry a visible `[PENDING: filmed eval]` placeholder.
+- [x] **Competition one-pager.** Augmentir, Dozuki, Poka, SwipeGuide, Tulip (digital work instructions), Drishti and Retrocausal (vision on the line). Ghost Expert's difference: the AI drafts the procedure from one video, and it checks each step live.
+- [x] **Market sizing** with cited sources: frontline training and connected-worker spend, bottom-up from plants × stations × price.
+- [x] **Customer interview script** for plant training, EHS and quality managers: onboarding cost, time to competence, how sign-offs are documented today, what they would pay to halve it.
+- [x] **Pilot proposal one-pager** and **LOI template**, ready to send after the first good conversation.
+- [x] **Demo film v2: script and shot list**, so filming day is one session. Order: problem → real expert video drafted into steps → trainee coached and flagged → training record → real numbers. Same HeyGen voice, no music.
+
+Phase C output: the deck at https://claude.ai/artifact/VnB9W5DnvrNfUod2c2csz7 (private until shared), [15-market-and-competition.md](15-market-and-competition.md), [16-customer-kit.md](16-customer-kit.md), [17-demo-film-v2.md](17-demo-film-v2.md). Market sizing has the top-down figure; the bottom-up line waits on Census data and pilot pricing.
