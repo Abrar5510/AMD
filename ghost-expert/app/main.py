@@ -129,15 +129,21 @@ async def make_draft(pid: str):
     d = proc_dir(pid)
     if not (d / "expert.mp4").exists():
         raise HTTPException(404, "upload the expert video first")
+    # A proxy (Cloudflare: ~100 s) can cut this request while the draft keeps going; the page then polls GET.
+    for f in ("draft.json", "draft.error"):
+        (d / f).unlink(missing_ok=True)
     try:
         return await run_in_threadpool(author.draft, d)
-    except ValueError as e:
-        raise HTTPException(422, str(e))
+    except Exception as e:
+        (d / "draft.error").write_text(str(e) or type(e).__name__)
+        raise HTTPException(422 if isinstance(e, ValueError) else 500, str(e))
 
 
 @app.get("/api/procedures/{pid}/draft")
 def get_draft(pid: str):
     f = proc_dir(pid) / "draft.json"
+    if (f.parent / "draft.error").exists():
+        raise HTTPException(422, (f.parent / "draft.error").read_text())
     if not f.exists():
         raise HTTPException(404, "no draft yet")
     return json.loads(f.read_text())

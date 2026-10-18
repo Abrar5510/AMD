@@ -11,7 +11,7 @@ from transformers import AutoImageProcessor, SiglipVisionModel, pipeline
 
 SIGLIP_MODEL = os.environ.get("SIGLIP_MODEL", "google/siglip-so400m-patch14-384")
 WHISPER_MODEL = os.environ.get("WHISPER_MODEL", "openai/whisper-large-v3-turbo")
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"  # ROCm builds of PyTorch use the "cuda" name
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"  # ROCm builds of PyTorch use the "cuda" name; mps = Apple GPU
 DTYPE = torch.float16 if DEVICE == "cuda" else torch.float32
 
 

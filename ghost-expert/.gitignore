@@ -7,3 +7,5 @@ procedures/*/expert.mp4
 procedures/*/frames.npz
 procedures/*/draft.json
 procedures/*/procedure.*.json
+.env.local
+.public-url

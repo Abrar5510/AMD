@@ -216,7 +216,7 @@ async function api(path, opts = {}) {
   if (token) headers["X-App-Token"] = token;
   const r = await fetch(path, { ...opts, headers });
   const body = r.headers.get("content-type")?.includes("json") ? await r.json() : await r.text();
-  if (!r.ok) throw new Error(body.detail || body || r.statusText);
+  if (!r.ok) throw Object.assign(new Error(body.detail || body || r.statusText), { status: r.status });
   return body;
 }
 const fmt = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, "0")}`;
@@ -260,7 +260,16 @@ $("draft").onclick = async () => {
     await api(`/api/procedures/${id}/video`, { method: "PUT", body: file });
     const t0 = performance.now();
     const tick = setInterval(() => status(`Drafting on the AMD GPU: Whisper → SigLIP → Gemma… ${((performance.now() - t0) / 1000).toFixed(0)}s`), 250);
-    try { await api(`/api/procedures/${id}/draft`, { method: "POST" }); } finally { clearInterval(tick); }
+    try {
+      await api(`/api/procedures/${id}/draft`, { method: "POST" });
+    } catch (e) {
+      // A proxy timeout (Cloudflare 524) or dropped connection: the server keeps drafting, so wait for draft.json.
+      if (e.status && e.status < 500) throw e;
+      for (let i = 0; ; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        try { await api(`/api/procedures/${id}/draft`); break; } catch (e2) { if (e2.status !== 404 || i > 400) throw e2; }
+      }
+    } finally { clearInterval(tick); }
     await open(id);
     listIds();
   } catch (e) { status(e.message, true); }
