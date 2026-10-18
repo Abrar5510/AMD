@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --ink:#111111; --ink2:#1A1A18; --orange:#E85D26; --cream:#F0ECE5; --muted:#888880; --hint:#505048; --line:#282826; }
+  html, body { width:1920px; height:1080px; background:var(--ink); color:var(--cream); font-family:Barlow, sans-serif; overflow:hidden; }
+  .mono { font-family:'IBM Plex Mono', monospace; font-weight:500; text-transform:uppercase; letter-spacing:.14em; }
+  .left { position:absolute; left:110px; top:110px; bottom:110px; width:760px; display:flex; flex-direction:column; justify-content:space-between; }
+  .kicker { font-size:20px; color:var(--orange); }
+  h1 { font-size:230px; font-weight:900; line-height:.84; letter-spacing:-.045em; text-transform:lowercase; }
+  .rule { width:64px; height:4px; background:var(--orange); margin:44px 0 36px; }
+  .tag { font-size:46px; font-weight:600; line-height:1.15; text-transform:lowercase; max-width:700px; }
+  .foot { font-size:18px; color:var(--muted); line-height:1.8; }
+  /* the coach screen */
+  .screen { position:absolute; left:940px; top:110px; width:870px; height:860px; background:var(--ink2); border:14px solid var(--orange); display:flex; flex-direction:column; }
+  .steps { display:grid; grid-template-columns:repeat(8,1fr); gap:6px; padding:22px 24px 0; }
+  .steps div { height:46px; background:var(--hint); display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--ink); }
+  .steps .done { background:var(--cream); }
+  .steps .skip { background:var(--orange); color:var(--ink); }
+  .steps .now { background:transparent; border:2px solid var(--cream); color:var(--cream); }
+  .banner { margin:22px 24px 0; background:var(--orange); color:var(--ink); padding:22px 30px; }
+  .banner b { display:block; font-size:120px; font-weight:900; line-height:.85; letter-spacing:-.04em; text-transform:lowercase; }
+  .banner span { display:block; font-size:30px; font-weight:700; margin-top:34px; text-transform:lowercase; }
+  .stage { position:relative; flex:1; margin:22px 24px 24px; background:#0b0b0a; overflow:hidden; }
+  .seen { position:absolute; right:16px; top:16px; font-size:15px; color:var(--cream); background:rgba(17,17,17,.85); border:1px solid var(--line); padding:9px 12px; max-width:330px; line-height:1.5; }
+  /* top-down work area */
+  .boxlid { position:absolute; left:80px; top:150px; width:250px; height:190px; border:4px solid var(--cream); }
+  .boxlid i { position:absolute; width:22px; height:22px; border-radius:50%; border:3px solid var(--cream); }
+  .hand { position:absolute; left:260px; top:270px; width:150px; height:70px; border-radius:40px; background:var(--muted); transform:rotate(-24deg); }
+  .driver { position:absolute; left:215px; top:276px; width:110px; height:10px; background:var(--cream); transform:rotate(-24deg); }
+  .clip { position:absolute; right:0; top:0; bottom:0; width:48%; border-left:4px solid var(--orange); background:var(--ink); }
+  .clip .mono { position:absolute; left:18px; top:16px; font-size:15px; color:var(--orange); }
+  .switch { position:absolute; left:110px; top:130px; width:120px; height:70px; border:4px solid var(--cream); }
+  .switch:after { content:''; position:absolute; left:14px; top:14px; width:36px; height:34px; background:var(--orange); }
+  .finger { position:absolute; left:150px; top:170px; width:150px; height:60px; border-radius:34px; background:var(--muted); transform:rotate(30deg); }
+  .clip p { position:absolute; left:18px; bottom:16px; font-size:22px; font-weight:600; color:var(--cream); text-transform:lowercase; }
+  .amd { position:absolute; left:940px; top:990px; width:870px; display:flex; justify-content:space-between; font-size:17px; color:var(--muted); }
+</style></head>
+<body>
+  <div class="left">
+    <div class="kicker mono">AMD Hackathon ACT III · Intelligent Industry</div>
+    <div>
+      <h1>ghost<br>expert</h1>
+      <div class="rule"></div>
+      <div class="tag">your expert films the job once. every new hire is coached to competent, on the record.</div>
+    </div>
+    <div class="foot mono">Gemma 3 · SigLIP · Whisper · Kokoro<br>one AMD Instinct GPU · ROCm · vLLM</div>
+  </div>
+
+  <div class="screen">
+    <div class="steps mono">
+      <div class="done">1</div><div class="done">2</div><div class="done">3</div><div class="skip">4 ⚠</div>
+      <div class="now">5</div><div>6</div><div>7</div><div>8</div>
+    </div>
+    <div class="banner">
+      <b>stop.</b>
+      <span>you haven’t done step 4: test the machine is dead.</span>
+    </div>
+    <div class="stage">
+      <div class="boxlid"><i style="left:10px;top:10px"></i><i style="right:10px;top:10px"></i><i style="left:10px;bottom:10px"></i><i style="right:10px;bottom:10px"></i></div>
+      <div class="driver"></div>
+      <div class="hand"></div>
+      <div class="clip">
+        <div class="mono">Expert · step 4</div>
+        <div class="switch"></div>
+        <div class="finger"></div>
+        <p>press its switch first</p>
+      </div>
+    </div>
+  </div>
+  <div class="amd mono"><span>Coach view · live</span><span>Gemma · 2 agreeing checks</span></div>
+</body></html>

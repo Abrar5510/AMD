@@ -1,0 +1,87 @@
+{
+  "id": "loto-filter",
+  "title": "Lockout/tagout + filter change",
+  "steps": [
+    {
+      "id": 1,
+      "title": "Switch the machine off at the strip",
+      "instruction": "Turn off the power strip switch.",
+      "visual_check": "the power strip switch light is off and the lamp is off",
+      "safety_critical": false,
+      "must_come_after": [],
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 2,
+      "title": "Unplug and lock the plug",
+      "instruction": "Unplug the machine and close the plug inside the red lockout box.",
+      "visual_check": "the machine's plug is inside the red lockout box and the box is closed",
+      "safety_critical": true,
+      "must_come_after": [1],
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 3,
+      "title": "Hang the tag",
+      "instruction": "Attach the yellow DO NOT OPERATE tag to the lockout box.",
+      "visual_check": "a yellow tag is attached to the red lockout box",
+      "safety_critical": true,
+      "must_come_after": [2],
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 4,
+      "title": "Verify zero energy",
+      "instruction": "Press the machine's own switch. It must stay off.",
+      "visual_check": "a hand presses the lamp's own switch and the lamp stays off",
+      "safety_critical": true,
+      "must_come_after": [3],
+      "common_mistake": "Opening the cover without testing the switch",
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 5,
+      "title": "Remove the cover",
+      "instruction": "Remove the 4 cover screws onto the tray and lift the cover off.",
+      "visual_check": "the box cover is off and the screws are on the tray",
+      "safety_critical": true,
+      "must_come_after": [4],
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 6,
+      "title": "Swap the filter",
+      "instruction": "Take the old filter out and put the new one in.",
+      "visual_check": "the new filter's color is visible inside the open box",
+      "safety_critical": false,
+      "must_come_after": [5],
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 7,
+      "title": "Refit the cover",
+      "instruction": "Put the cover back on and refit all 4 screws.",
+      "visual_check": "the cover is on the box and the screw tray is empty",
+      "safety_critical": false,
+      "must_come_after": [6],
+      "expert_clip": null,
+      "keyframe": null
+    },
+    {
+      "id": 8,
+      "title": "Remove lock and restore power",
+      "instruction": "Remove the tag and lock, plug in, switch on.",
+      "visual_check": "the lockout box is empty and the lamp is on",
+      "safety_critical": false,
+      "must_come_after": [7],
+      "expert_clip": null,
+      "keyframe": null
+    }
+  ]
+}

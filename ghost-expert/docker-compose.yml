@@ -1,4 +1,15 @@
 # Ghost Expert on one AMD Instinct GPU: vLLM (Gemma 3 vision) + the FastAPI app.
+x-amd-gpu: &amd-gpu
+  devices:
+    - /dev/kfd
+    - /dev/dri
+  group_add:
+    - video
+  ipc: host
+  shm_size: 16g
+  security_opt:
+    - seccomp=unconfined
+
 services:
   vllm:
     # ponytail: "latest" for the first smoke test; pin the tag that works (see README) before the demo.
@@ -17,15 +28,7 @@ services:
       VLLM_API_KEY: ${VLLM_API_KEY:-}
     volumes:
       - ./.hf-cache:/root/.cache/huggingface
-    devices:
-      - /dev/kfd
-      - /dev/dri
-    group_add:
-      - video
-    ipc: host
-    shm_size: 16g
-    security_opt:
-      - seccomp=unconfined
+    <<: *amd-gpu
     # Localhost only: reach it from your laptop with an SSH tunnel, never expose it publicly.
     ports:
       - "127.0.0.1:8000:8000"
@@ -38,10 +41,16 @@ services:
 
   app:
     build: .
+    <<: *amd-gpu
+    env_file: .env  # HF_TOKEN, SIGLIP_MODEL, COACH_* knobs
     environment:
       VLLM_URL: http://vllm:8000
       MODEL: ${MODEL:-google/gemma-3-12b-it}
       VLLM_API_KEY: ${VLLM_API_KEY:-}
+    volumes:
+      - ./.hf-cache:/root/.cache/huggingface
+      - ./procedures:/srv/procedures
+      - ./eval:/srv/eval
     ports:
       - "8080:8080"
     depends_on:
