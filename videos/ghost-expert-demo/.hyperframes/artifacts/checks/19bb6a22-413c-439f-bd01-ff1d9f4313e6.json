@@ -1,0 +1,157 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "filesScanned": 10
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 2,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 18.7,
+        "selector": "#a02-t3",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 554.5,
+          "top": 492.17,
+          "right": 719.88,
+          "bottom": 528.17,
+          "width": 165.38,
+          "height": 36
+        },
+        "containerSelector": "#a02-edit",
+        "text": "hang the tag",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/02-author.html",
+        "bbox": {
+          "x": 554.5,
+          "y": 492.17,
+          "width": 165.38,
+          "height": 36
+        },
+        "firstSeen": 18.7,
+        "lastSeen": 18.7,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.7
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 25.676,
+        "selector": "#c03-hand",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 513.09,
+          "top": 772.56,
+          "right": 748.24,
+          "bottom": 912.21,
+          "width": 235.15,
+          "height": 139.64
+        },
+        "containerSelector": "#c03-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 22.21
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 513.09,
+          "y": 772.56,
+          "width": 235.15,
+          "height": 139.64
+        },
+        "firstSeen": 25.676,
+        "lastSeen": 25.676,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          25.676
+        ]
+      }
+    ],
+    "duration": 92.433,
+    "samples": [
+      5.135,
+      15.406,
+      25.676,
+      35.946,
+      46.217,
+      56.487,
+      66.757,
+      77.028,
+      87.298
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 2,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": true,
+    "samples": [
+      5.135,
+      25.676,
+      46.217,
+      66.757,
+      87.298
+    ],
+    "checked": 61,
+    "passed": 61
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

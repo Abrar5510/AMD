@@ -1,0 +1,32 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Barlow"; font-weight: 700; src: url("assets/fonts/Barlow-700.woff2") format("woff2"); }
+    @font-face { font-family: "Barlow"; font-weight: 900; src: url("assets/fonts/Barlow-900.woff2") format("woff2"); }
+    @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; color: #111111; font-family: "Barlow", sans-serif; }
+    #f08-bg { position: absolute; inset: 0; background: #E85D26; }
+    .f08-mono { font-family: "IBM Plex Mono", monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; }
+    #f08-mark { position: absolute; left: 110px; top: 100px; font-size: 22px; }
+    #f08-line { position: absolute; left: 110px; top: 330px; font-size: 64px; font-weight: 700; text-transform: lowercase; }
+    #f08-film { position: absolute; left: 100px; top: 440px; font-size: 330px; font-weight: 900; letter-spacing: -0.055em; line-height: 0.85; text-transform: lowercase; }
+    #f08-foot { position: absolute; right: 110px; top: 100px; font-size: 22px; color: rgba(17,17,17,0.75); }
+  </style>
+  <div id="root" data-composition-id="08-close" data-width="1920" data-height="1080">
+    <div id="f08-bg" class="clip" data-start="0" data-duration="4.948" data-track-index="0"></div>
+    <div id="f08-mark" class="f08-mono">Ghost Expert</div>
+    <div id="f08-foot" class="f08-mono">AMD Hackathon ACT III · Track 1</div>
+    <div id="f08-line">every plant has someone about to retire.</div>
+    <div id="f08-film">film them.</div>
+  </div>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(["#f08-mark", "#f08-foot"], { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.1);
+      tl.fromTo("#f08-line", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.3);
+      tl.fromTo("#f08-film", { opacity: 0, y: 60, scale: 1.06 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 2.5);
+      window.__timelines["08-close"] = tl;
+    })();
+  </script>
+</template>

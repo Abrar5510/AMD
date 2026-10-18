@@ -1,0 +1,15 @@
+· tts: heygen · voice aa9746e325ff46d482a54fe5bc87890f · 8 line(s)
+  voice 01: assets/voice/01.wav (8.438s, 23 words)
+  voice 02: assets/voice/02.wav (15.595s, 47 words)
+  voice 03: assets/voice/03.wav (7.967s, 26 words)
+  voice 04: assets/voice/04.wav (11.886s, 37 words)
+  voice 05: assets/voice/05.wav (24.111s, 63 words)
+  voice 06: assets/voice/06.wav (10.188s, 28 words)
+  voice 07: assets/voice/07.wav (9.3s, 20 words)
+  voice 08: assets/voice/08.wav (3.448s, 9 words)
+· bgm: disabled
+✓ audio engine → /Users/abrar/projects/AMD/videos/ghost-expert-demo/audio_engine_meta.json
+  heygen: yes  ·  ran: tts,bgm
+  voices: 8  ·  bgm: none  ·  sfx: 0
+  total voice duration: 90.933s
+✓ audio generate: 8 voice + no bgm → /Users/abrar/projects/AMD/videos/ghost-expert-demo/audio_meta.json

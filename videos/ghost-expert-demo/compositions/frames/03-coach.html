@@ -1,0 +1,80 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Barlow"; font-weight: 700; src: url("assets/fonts/Barlow-700.woff2") format("woff2"); }
+    @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; color: #F0ECE5; font-family: "Barlow", sans-serif; }
+    #c03-bg { position: absolute; inset: 0; background: #111111; }
+    .c03-mono { font-family: "IBM Plex Mono", monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; }
+    #c03-screen { position: absolute; left: 110px; top: 80px; width: 1700px; height: 810px; }
+    #c03-bar { position: absolute; left: 0; top: 0; width: 1700px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+    .c03-cell { height: 64px; background: #282826; display: flex; align-items: center; padding: 0 16px; gap: 10px; font-size: 18px; color: #A3A39B; position: relative; }
+    .c03-cell .c03-fill { position: absolute; inset: 0; background: #6FAE6A; }
+    .c03-cell span { position: relative; }
+    .c03-cur { outline: 3px solid #F0ECE5; outline-offset: -3px; color: #F0ECE5; }
+    #c03-cam { position: absolute; left: 0; top: 84px; width: 1700px; height: 726px; background: #0B0B0A; border: 1px solid #282826; overflow: hidden; }
+    #c03-live { position: absolute; left: 24px; top: 22px; font-size: 18px; color: #F0ECE5; display: flex; align-items: center; gap: 10px; }
+    #c03-dot { width: 12px; height: 12px; border-radius: 50%; background: #E85D26; }
+    #c03-seen { position: absolute; right: 24px; top: 22px; width: 560px; padding: 16px 20px; background: rgba(26,26,24,0.94); border: 1px solid #505048; font-size: 18px; line-height: 1.6; color: #F0ECE5; }
+    #c03-seen b { color: #6FAE6A; font-weight: 500; }
+    #c03-strip { position: absolute; left: 140px; top: 470px; width: 380px; height: 80px; border: 3px solid #888880; }
+    #c03-strip i { position: absolute; left: 22px; top: 20px; width: 38px; height: 34px; border: 3px solid #888880; }
+    #c03-lock { position: absolute; left: 400px; top: 380px; width: 110px; height: 110px; background: #E85D26; }
+    #c03-tag { position: absolute; left: 540px; top: 400px; width: 70px; height: 120px; border: 3px solid #F0ECE5; transform: rotate(8deg); }
+    #c03-box { position: absolute; left: 820px; top: 210px; width: 520px; height: 360px; border: 4px solid #F0ECE5; }
+    #c03-box i { position: absolute; width: 30px; height: 30px; border-radius: 50%; border: 3px solid #F0ECE5; }
+    #c03-hand { position: absolute; left: 560px; top: 560px; width: 220px; height: 96px; border-radius: 50px; background: #888880; }
+    #c03-sub { position: absolute; left: 50%; bottom: 40px; margin-left: -460px; width: 920px; text-align: center; padding: 18px 26px; background: rgba(17,17,17,0.9); font-size: 40px; font-weight: 700; text-transform: lowercase; }
+    #c03-sub em { font-style: normal; color: #888880; font-family: "IBM Plex Mono", monospace; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  </style>
+  <div id="root" data-composition-id="03-coach" data-width="1920" data-height="1080">
+    <div id="c03-bg" class="clip" data-start="0" data-duration="7.967" data-track-index="0"></div>
+    <div id="c03-screen">
+      <div id="c03-bar" class="c03-mono">
+        <div class="c03-cell" id="c03-k1"><div class="c03-fill"></div><span>1</span></div>
+        <div class="c03-cell" id="c03-k2"><div class="c03-fill"></div><span>2 ⚠</span></div>
+        <div class="c03-cell" id="c03-k3"><div class="c03-fill"></div><span>3 ⚠</span></div>
+        <div class="c03-cell" id="c03-k4"><span>4 ⚠</span></div>
+        <div class="c03-cell"><span>5 ⚠</span></div>
+        <div class="c03-cell"><span>6</span></div>
+        <div class="c03-cell"><span>7</span></div>
+        <div class="c03-cell"><span>8</span></div>
+      </div>
+      <div id="c03-cam">
+        <div id="c03-live" class="c03-mono"><div id="c03-dot"></div>Live · top-down · 4 fps</div>
+        <div id="c03-strip"><i></i></div>
+        <div id="c03-lock"></div>
+        <div id="c03-tag"></div>
+        <div id="c03-box"><i style="left:16px;top:16px"></i><i style="right:16px;top:16px"></i><i style="left:16px;bottom:16px"></i><i style="right:16px;bottom:16px"></i></div>
+        <div id="c03-hand"></div>
+        <div id="c03-seen" class="c03-mono">Gemma · step 3 <b>✓ done</b><br>tag hanging on the lock box</div>
+        <div id="c03-sub"><em>Coach · next</em>press the machine’s switch</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#c03-screen", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#c03-bar .c03-cell", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.3, stagger: 0.04, ease: "power3.out" }, 0.4);
+      tl.fromTo(["#c03-strip", "#c03-box"], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.8);
+      tl.fromTo("#c03-hand", { x: -260, y: 120, rotation: -12 }, { x: 0, y: 0, rotation: -12, duration: 1.4, ease: "power2.out" }, 1.4);
+      tl.fromTo("#c03-dot", { opacity: 1 }, { opacity: 0.25, duration: 0.5, ease: "steps(1)" }, 1.0);
+      tl.to("#c03-dot", { opacity: 1, duration: 0.5, ease: "steps(1)" }, 1.5);
+      tl.to("#c03-dot", { opacity: 0.25, duration: 0.5, ease: "steps(1)" }, 2.0);
+      tl.to("#c03-dot", { opacity: 1, duration: 0.5, ease: "steps(1)" }, 2.5);
+      // steps turn green as Gemma confirms
+      tl.fromTo("#c03-k1 .c03-fill", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 3.8);
+      tl.fromTo("#c03-lock", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 4.0);
+      tl.fromTo("#c03-k2 .c03-fill", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 4.3);
+      tl.fromTo("#c03-tag", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 4.5);
+      tl.fromTo("#c03-k3 .c03-fill", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 4.9);
+      tl.fromTo("#c03-k1, #c03-k2, #c03-k3", { color: "#A3A39B" }, { color: "#111111", duration: 0.2, stagger: 0.5 }, 3.9);
+      tl.fromTo("#c03-seen", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 5.0);
+      tl.fromTo("#c03-k4", { outlineColor: "rgba(240,236,229,0)" }, { outlineColor: "rgba(240,236,229,1)", color: "#F0ECE5", duration: 0.3 }, 5.6);
+      tl.fromTo("#c03-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 6.1);
+      window.__timelines["03-coach"] = tl;
+    })();
+  </script>
+</template>

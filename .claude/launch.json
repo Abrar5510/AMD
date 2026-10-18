@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ghost-mock",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/private/tmp/claude-501/-Users-abrar-projects-AMD/e98f7d3d-053b-435f-995c-7e32e9dbd705/scratchpad/mock.py"],
+      "port": 8091
+    }
+  ]
+}

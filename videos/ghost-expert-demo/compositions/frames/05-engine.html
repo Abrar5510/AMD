@@ -1,0 +1,94 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Barlow"; font-weight: 400; src: url("assets/fonts/Barlow-400.woff2") format("woff2"); }
+    @font-face { font-family: "Barlow"; font-weight: 800; src: url("assets/fonts/Barlow-800.woff2") format("woff2"); }
+    @font-face { font-family: "Barlow"; font-weight: 900; src: url("assets/fonts/Barlow-900.woff2") format("woff2"); }
+    @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; color: #F0ECE5; font-family: "Barlow", sans-serif; }
+    #e05-bg { position: absolute; inset: 0; background: #111111; }
+    .e05-mono { font-family: "IBM Plex Mono", monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; }
+    #e05-title { position: absolute; left: 110px; top: 90px; font-size: 120px; font-weight: 900; line-height: 0.9; letter-spacing: -0.045em; text-transform: lowercase; }
+    #e05-title span { color: #E85D26; }
+    #e05-tiers { position: absolute; left: 110px; top: 280px; width: 900px; display: flex; flex-direction: column; gap: 22px; }
+    .e05-tier { position: relative; border-top: 1px solid #505048; padding: 20px 0 0 0; height: 180px; }
+    .e05-tier.own { border-top: 4px solid #E85D26; }
+    .e05-k { font-size: 18px; color: #888880; }
+    .e05-tier.own .e05-k { color: #E85D26; }
+    .e05-n { font-size: 60px; font-weight: 800; line-height: 1.05; margin-top: 8px; }
+    .e05-frames { position: absolute; right: 0; top: 34px; display: flex; gap: 8px; }
+    .e05-frames i { width: 40px; height: 54px; border: 2px solid #505048; display: block; }
+    .e05-lanes { position: absolute; right: 0; top: 30px; display: flex; flex-direction: column; gap: 12px; }
+    .e05-lane { width: 330px; height: 42px; border: 2px solid #505048; position: relative; overflow: hidden; font-size: 16px; display: flex; align-items: center; padding-left: 14px; color: #A3A39B; }
+    .e05-lane b { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: #F0ECE5; opacity: 0.18; }
+    .e05-checks { position: absolute; right: 0; top: 30px; display: flex; gap: 14px; align-items: center; }
+    .e05-chk { width: 96px; height: 96px; border: 3px solid #505048; display: flex; align-items: center; justify-content: center; font-size: 46px; font-weight: 900; color: #111111; position: relative; }
+    .e05-chk em { position: absolute; inset: 0; background: #E85D26; }
+    .e05-chk span { position: relative; }
+    #e05-eq { font-size: 46px; font-weight: 900; color: #888880; }
+    #e05-stopchip { padding: 18px 22px; background: #E85D26; color: #111111; font-size: 22px; }
+    #e05-chart { position: absolute; left: 1110px; top: 280px; width: 700px; height: 620px; border-left: 1px solid #505048; padding-left: 60px; }
+    #e05-ck { font-size: 18px; color: #E85D26; line-height: 1.7; }
+    #e05-bars { position: absolute; left: 60px; bottom: 0; width: 640px; height: 470px; display: flex; gap: 70px; align-items: flex-end; border-bottom: 1px solid #505048; }
+    .e05-col { width: 270px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; height: 100%; }
+    .e05-val { font-size: 110px; font-weight: 900; line-height: 0.9; letter-spacing: -0.04em; margin-bottom: 14px; }
+    .e05-bar { width: 270px; background: #505048; }
+    #e05-b1 { height: 280px; }
+    #e05-b2 { height: 6px; background: #E85D26; }
+    #e05-v2 { color: #E85D26; }
+    .e05-cl { font-size: 16px; color: #888880; margin-top: 14px; height: 0; overflow: visible; white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="05-engine" data-width="1920" data-height="1080" data-duration="24.611">
+    <div id="e05-bg" class="clip" data-start="0" data-duration="24.611" data-track-index="0"></div>
+    <div id="e05-title">never decides <span>alone.</span></div>
+    <div id="e05-tiers">
+      <div class="e05-tier" id="e05-t1">
+        <div class="e05-k e05-mono">01 · every frame · ~10 ms</div>
+        <div class="e05-n">SigLIP guesses</div>
+        <div class="e05-frames"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="e05-tier" id="e05-t2">
+        <div class="e05-k e05-mono">02 · one round trip</div>
+        <div class="e05-n">Gemma checks ×2</div>
+        <div class="e05-lanes e05-mono"><div class="e05-lane"><b id="e05-l1"></b>expected step</div><div class="e05-lane"><b id="e05-l2"></b>newest skipped step</div></div>
+      </div>
+      <div class="e05-tier own" id="e05-t3">
+        <div class="e05-k e05-mono">03 · owns the state</div>
+        <div class="e05-n">rule engine</div>
+        <div class="e05-checks e05-mono"><div class="e05-chk" id="e05-c1"><em></em><span>A</span></div><div class="e05-chk" id="e05-c2"><em></em><span>B</span></div><div id="e05-eq">=</div><div id="e05-stopchip">Stop</div></div>
+      </div>
+    </div>
+    <div id="e05-chart">
+      <div id="e05-ck" class="e05-mono">Simulation · Gemma wrong 5%<br>Correct trainees falsely stopped</div>
+      <div id="e05-bars">
+        <div class="e05-col"><div class="e05-val" id="e05-v1">0%</div><div class="e05-bar" id="e05-b1"></div><div class="e05-cl e05-mono">One answer decides</div></div>
+        <div class="e05-col"><div class="e05-val" id="e05-v2">0%</div><div class="e05-bar" id="e05-b2"></div><div class="e05-cl e05-mono">Ghost Expert</div></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const v1 = { n: 0 };
+      const v1El = document.getElementById("e05-v1");
+      tl.fromTo("#e05-title", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+      tl.fromTo("#e05-title span", { opacity: 0.15 }, { opacity: 1, duration: 0.4 }, 3.9);
+      tl.fromTo("#e05-t1", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 5.0);
+      tl.fromTo("#e05-t1 .e05-frames i", { borderColor: "#505048" }, { borderColor: "#F0ECE5", duration: 0.08, stagger: 0.12 }, 5.6);
+      tl.fromTo("#e05-t2", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 7.2);
+      tl.fromTo(["#e05-l1", "#e05-l2"], { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.9, ease: "power2.inOut" }, 8.6);
+      tl.fromTo("#e05-t3", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 9.5);
+      tl.fromTo("#e05-c1 em", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 13.4);
+      tl.fromTo("#e05-c2 em", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 14.4);
+      tl.fromTo(["#e05-eq", "#e05-stopchip"], { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.15 }, 14.8);
+      // the simulation
+      tl.fromTo("#e05-chart", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 15.6);
+      tl.fromTo("#e05-b1", { scaleY: 0, transformOrigin: "center bottom" }, { scaleY: 1, duration: 1.1, ease: "power3.out" }, 19.4);
+      tl.fromTo(v1, { n: 0 }, { n: 14, duration: 1.1, ease: "power3.out", onUpdate: () => { v1El.textContent = Math.round(v1.n) + "%"; } }, 19.4);
+      tl.fromTo("#e05-v2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 22.9);
+      tl.fromTo("#e05-b2", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.4 }, 22.9);
+      window.__timelines["05-engine"] = tl;
+    })();
+  </script>
+</template>

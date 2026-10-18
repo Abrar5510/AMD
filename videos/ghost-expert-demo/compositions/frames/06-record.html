@@ -1,0 +1,77 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Barlow"; font-weight: 700; src: url("assets/fonts/Barlow-700.woff2") format("woff2"); }
+    @font-face { font-family: "Barlow"; font-weight: 900; src: url("assets/fonts/Barlow-900.woff2") format("woff2"); }
+    @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; color: #F0ECE5; font-family: "Barlow", sans-serif; }
+    #r06-bg { position: absolute; inset: 0; background: #111111; }
+    .r06-mono { font-family: "IBM Plex Mono", monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; }
+    #r06-q { position: absolute; left: 110px; top: 110px; width: 720px; padding: 28px 34px; border: 3px solid #F0ECE5; border-radius: 0 40px 40px 40px; font-size: 54px; font-weight: 700; line-height: 1.05; text-transform: lowercase; }
+    #r06-hold { position: absolute; left: 110px; top: 74px; font-size: 18px; color: #888880; }
+    #r06-clip { position: absolute; left: 110px; top: 360px; width: 720px; height: 440px; background: #1A1A18; border: 4px solid #5B8DEF; overflow: hidden; }
+    #r06-clipl { position: absolute; left: 20px; top: 16px; font-size: 18px; color: #5B8DEF; }
+    #r06-housing { position: absolute; left: 190px; top: 110px; width: 340px; height: 250px; border: 4px solid #F0ECE5; }
+    #r06-slot { position: absolute; left: 40px; top: 70px; width: 260px; height: 110px; border: 3px dashed #505048; }
+    #r06-filter { position: absolute; left: 230px; top: 180px; width: 260px; height: 110px; background: #E85D26; background-image: repeating-linear-gradient(90deg, rgba(17,17,17,0.35) 0 6px, transparent 6px 22px); }
+    #r06-rec { position: absolute; left: 960px; top: 74px; width: 850px; height: 826px; background: #F0ECE5; color: #111111; padding: 40px 46px; }
+    #r06-rh { font-size: 18px; color: #505048; display: flex; justify-content: space-between; }
+    #r06-rt { font-size: 64px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; margin-top: 14px; text-transform: lowercase; }
+    #r06-legend { margin-top: 28px; font-size: 16px; color: #505048; display: flex; gap: 28px; }
+    #r06-legend i { display: inline-block; width: 18px; height: 10px; margin-right: 8px; vertical-align: middle; }
+    #r06-rows { margin-top: 16px; display: flex; flex-direction: column; gap: 9px; }
+    .r06-row { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 12px; font-size: 16px; }
+    .r06-b { display: flex; flex-direction: column; gap: 3px; }
+    .r06-t { height: 12px; background: #111111; }
+    .r06-e { height: 12px; background: #888880; }
+    .r06-row.bad .r06-t { background: #E85D26; }
+    #r06-stats { position: absolute; left: 46px; right: 46px; bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #C9C4BB; padding-top: 22px; }
+    #r06-stops { font-size: 18px; color: #505048; }
+    #r06-stops b { display: block; font-family: "Barlow", sans-serif; font-size: 80px; font-weight: 900; color: #E85D26; letter-spacing: 0; line-height: 1; }
+    #r06-verdict { padding: 16px 22px; border: 4px solid #111111; font-size: 24px; color: #111111; transform-origin: center center; }
+  </style>
+  <div id="root" data-composition-id="06-record" data-width="1920" data-height="1080" data-duration="10.688">
+    <div id="r06-bg" class="clip" data-start="0" data-duration="10.688" data-track-index="0"></div>
+    <div id="r06-hold" class="r06-mono">Hold to ask · Whisper</div>
+    <div id="r06-q">“where does the filter go?”</div>
+    <div id="r06-clip">
+      <div id="r06-clipl" class="r06-mono">Expert · step 6 · plays once</div>
+      <div id="r06-housing"><div id="r06-slot"></div></div>
+      <div id="r06-filter"></div>
+    </div>
+    <div id="r06-rec">
+      <div id="r06-rh" class="r06-mono"><span>Training record</span><span>loto-filter</span></div>
+      <div id="r06-rt">time per step</div>
+      <div id="r06-legend" class="r06-mono"><span><i style="background:#111111"></i>Trainee</span><span><i style="background:#888880"></i>Expert</span><span><i style="background:#E85D26"></i>Stopped</span></div>
+      <div id="r06-rows" class="r06-mono">
+        <div class="r06-row"><span>1</span><div class="r06-b"><div class="r06-t" style="width:34%"></div><div class="r06-e" style="width:26%"></div></div></div>
+        <div class="r06-row"><span>2</span><div class="r06-b"><div class="r06-t" style="width:58%"></div><div class="r06-e" style="width:40%"></div></div></div>
+        <div class="r06-row"><span>3</span><div class="r06-b"><div class="r06-t" style="width:40%"></div><div class="r06-e" style="width:30%"></div></div></div>
+        <div class="r06-row bad"><span>4</span><div class="r06-b"><div class="r06-t" style="width:82%"></div><div class="r06-e" style="width:22%"></div></div></div>
+        <div class="r06-row"><span>5</span><div class="r06-b"><div class="r06-t" style="width:66%"></div><div class="r06-e" style="width:50%"></div></div></div>
+        <div class="r06-row"><span>6</span><div class="r06-b"><div class="r06-t" style="width:72%"></div><div class="r06-e" style="width:44%"></div></div></div>
+        <div class="r06-row"><span>7</span><div class="r06-b"><div class="r06-t" style="width:60%"></div><div class="r06-e" style="width:46%"></div></div></div>
+        <div class="r06-row"><span>8</span><div class="r06-b"><div class="r06-t" style="width:30%"></div><div class="r06-e" style="width:24%"></div></div></div>
+      </div>
+      <div id="r06-stats">
+        <div id="r06-stops" class="r06-mono"><b>1</b>Safety stop caught</div>
+        <div id="r06-verdict" class="r06-mono">Needs another run</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#r06-hold", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.1);
+      tl.fromTo("#r06-q", { opacity: 0, y: 20, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 0.3);
+      tl.fromTo("#r06-clip", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 2.3);
+      tl.fromTo("#r06-filter", { x: 0, y: 0 }, { x: -190, y: -100, duration: 1.4, ease: "power2.inOut" }, 2.7);
+      tl.fromTo("#r06-rec", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 3.9);
+      tl.fromTo("#r06-rows .r06-t, #r06-rows .r06-e", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.5, stagger: 0.04, ease: "power3.out" }, 6.6);
+      tl.fromTo("#r06-stops", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 7.8);
+      tl.fromTo("#r06-verdict", { opacity: 0, scale: 1.6, rotation: -4 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.3, ease: "power4.in" }, 8.9);
+      window.__timelines["06-record"] = tl;
+    })();
+  </script>
+</template>

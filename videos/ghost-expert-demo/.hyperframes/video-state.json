@@ -1,0 +1,517 @@
+{
+  "version": 1,
+  "historyId": "0e4d6e20-470e-4486-a689-9742932b6bf3",
+  "currentRevision": "70a7f263-defe-4ec9-a593-91a7ae366942",
+  "pendingChanges": false,
+  "files": {
+    ".media/manifest.jsonl": {
+      "hash": "84f705e66587c8f1739fb6d0b9fe77ea7d72a00e5551fd8ef5287f6382af76da",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/84/84f705e66587c8f1739fb6d0b9fe77ea7d72a00e5551fd8ef5287f6382af76da"
+    },
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "BRIEF.md": {
+      "hash": "67ed6f00caad52c2399c4b9d7acd69ec36e63bdbe848a5bed46b2c55b9c5afff",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/67/67ed6f00caad52c2399c4b9d7acd69ec36e63bdbe848a5bed46b2c55b9c5afff"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "SCRIPT.md": {
+      "hash": "e34afef74f57b6c71d7f0e1d4ab6154e9f632c7251973d27ecff54db1fa3c779",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/e3/e34afef74f57b6c71d7f0e1d4ab6154e9f632c7251973d27ecff54db1fa3c779"
+    },
+    "STORYBOARD.md": {
+      "hash": "0d5ca3bbbba6481aa5848fd874726d5759dbc476ddadd6014a1382b89256fa17",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/0d/0d5ca3bbbba6481aa5848fd874726d5759dbc476ddadd6014a1382b89256fa17"
+    },
+    "assets/fonts/Barlow-400.woff2": {
+      "hash": "7a686e76312866b7d506c103e51a829d4c96a0b4576835128d3b7b53801c095a",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/7a/7a686e76312866b7d506c103e51a829d4c96a0b4576835128d3b7b53801c095a"
+    },
+    "assets/fonts/Barlow-600.woff2": {
+      "hash": "488b58098126c00b8fa77f4d58b0a4bc982e81e4c83323c1a73d9f1a67c15971",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/48/488b58098126c00b8fa77f4d58b0a4bc982e81e4c83323c1a73d9f1a67c15971"
+    },
+    "assets/fonts/Barlow-700.woff2": {
+      "hash": "98aa8b5c2582107d73a6f1254f08b152b0c037ae5626a902dd44af8c781e0e6d",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/98/98aa8b5c2582107d73a6f1254f08b152b0c037ae5626a902dd44af8c781e0e6d"
+    },
+    "assets/fonts/Barlow-800.woff2": {
+      "hash": "621caf4a8ff40e97b7b6f8571cfb9dbe7062c2c4fff9d341297834bba0df3e41",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/62/621caf4a8ff40e97b7b6f8571cfb9dbe7062c2c4fff9d341297834bba0df3e41"
+    },
+    "assets/fonts/Barlow-900.woff2": {
+      "hash": "6acec3ba2ea19cb590dd6bc28101f58551d367dfcc08532f3dd54825a8093b70",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/6a/6acec3ba2ea19cb590dd6bc28101f58551d367dfcc08532f3dd54825a8093b70"
+    },
+    "assets/fonts/IBMPlexMono-500.woff2": {
+      "hash": "a76f53ca6612e7b3828eec2311098675b7f9849ae4169a8bcef6302aec02a6c0",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/a7/a76f53ca6612e7b3828eec2311098675b7f9849ae4169a8bcef6302aec02a6c0"
+    },
+    "assets/voice/01.wav": {
+      "hash": "d15510a6e3b1a6edc7a238d83ddb294c143fd83003cb336c13ed0859eaeedd76",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/d1/d15510a6e3b1a6edc7a238d83ddb294c143fd83003cb336c13ed0859eaeedd76"
+    },
+    "assets/voice/03.wav": {
+      "hash": "056642ba85c49fb3def510ca105efd22e1375e4cf37fb4263bec7f1f1e01dae1",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/05/056642ba85c49fb3def510ca105efd22e1375e4cf37fb4263bec7f1f1e01dae1"
+    },
+    "assets/voice/04.wav": {
+      "hash": "32231fd76d8cf8140de30947185e614ded2688d9b4aacab516b1b08b3a735cc0",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/32/32231fd76d8cf8140de30947185e614ded2688d9b4aacab516b1b08b3a735cc0"
+    },
+    "assets/voice/06.wav": {
+      "hash": "3db5fd0c7375ffbb95d2fa8600c8783523efbc43e2d6b224e32301599e5d27e8",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/3d/3db5fd0c7375ffbb95d2fa8600c8783523efbc43e2d6b224e32301599e5d27e8"
+    },
+    "assets/voice/07.wav": {
+      "hash": "9fa3cdc845d7ee5fc9aa8ec5c4efc7bf22205c8951ebe2cb45d89f524f64f08e",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/9f/9fa3cdc845d7ee5fc9aa8ec5c4efc7bf22205c8951ebe2cb45d89f524f64f08e"
+    },
+    "assets/voice/08.wav": {
+      "hash": "d64758b9126e5ff551777b845bcfd9100eaf40ec99b7948bb89a6ec6b9ca4bf2",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/d6/d64758b9126e5ff551777b845bcfd9100eaf40ec99b7948bb89a6ec6b9ca4bf2"
+    },
+    "audio_engine_meta.json": {
+      "hash": "856f208dfb26315093865bdef975d536ef13288ab8ebb70e41d9cee6bfaa1195",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/85/856f208dfb26315093865bdef975d536ef13288ab8ebb70e41d9cee6bfaa1195"
+    },
+    "audio_meta.json": {
+      "hash": "ceaf84a57892a11a01e255e4d6de6eb29eb3479800b9769d0c52744ea934193a",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/ce/ceaf84a57892a11a01e255e4d6de6eb29eb3479800b9769d0c52744ea934193a"
+    },
+    "audio_request.json": {
+      "hash": "4791be83045f8ddcd83d3865aedcf111c3e29ab92b3b637d247692c9c7b4a8bb",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/47/4791be83045f8ddcd83d3865aedcf111c3e29ab92b3b637d247692c9c7b4a8bb"
+    },
+    "caption-overrides.json": {
+      "hash": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/37/37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "caption_groups.json": {
+      "hash": "e53c3f9b8630eba8c9f01b87da5f7f77079cd5955474dfc5b7123b2e07a6c626",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/e5/e53c3f9b8630eba8c9f01b87da5f7f77079cd5955474dfc5b7123b2e07a6c626"
+    },
+    "capture/extracted/tokens.json": {
+      "hash": "9ffe1882d453211eae70b4c55329e74b77227bd9f79cdb9104e8e9217a9602bd",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/9f/9ffe1882d453211eae70b4c55329e74b77227bd9f79cdb9104e8e9217a9602bd"
+    },
+    "capture/extracted/visible-text.txt": {
+      "hash": "55295481e47bda7aff3448c232f454e951ac19c3d40fb600415c49d0cbf76940",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/55/55295481e47bda7aff3448c232f454e951ac19c3d40fb600415c49d0cbf76940"
+    },
+    "compositions/captions.html": {
+      "hash": "1194ab356284d38e61ec3aa7661cb4685df63aeb9f56694f87368712bdaf87b7",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/11/1194ab356284d38e61ec3aa7661cb4685df63aeb9f56694f87368712bdaf87b7"
+    },
+    "compositions/frames/01-hook.html": {
+      "hash": "5f38610b528847a184d477407a295cc40a3a56c3ae152ff630312815d4b0aad9",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/5f/5f38610b528847a184d477407a295cc40a3a56c3ae152ff630312815d4b0aad9"
+    },
+    "compositions/frames/02-author.html": {
+      "hash": "22da401ef1cd4c14527e98d9d294dbcccf231e39aa02e47efa32191b0b5b705e",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/22/22da401ef1cd4c14527e98d9d294dbcccf231e39aa02e47efa32191b0b5b705e"
+    },
+    "compositions/frames/03-coach.html": {
+      "hash": "a2c491c8af45687a076fc3e5e711389f9cdecdf8078dc419ffe7c3f1ef00676d",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/a2/a2c491c8af45687a076fc3e5e711389f9cdecdf8078dc419ffe7c3f1ef00676d"
+    },
+    "compositions/frames/04-stop.html": {
+      "hash": "5878fb4d229962aef885c4a7e78676dc532b78fbc1bd2e7cae135ea9629378e6",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/58/5878fb4d229962aef885c4a7e78676dc532b78fbc1bd2e7cae135ea9629378e6"
+    },
+    "compositions/frames/05-engine.html": {
+      "hash": "ab4e724b2026922760b369c9e3bb609f397e199c7840467fa79bf011c7064816",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/ab/ab4e724b2026922760b369c9e3bb609f397e199c7840467fa79bf011c7064816"
+    },
+    "compositions/frames/06-record.html": {
+      "hash": "a7b60c1ed767a0709a56955ed6e0e091162c1a5159f92be4dd8830f3e011914f",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/a7/a7b60c1ed767a0709a56955ed6e0e091162c1a5159f92be4dd8830f3e011914f"
+    },
+    "compositions/frames/07-amd.html": {
+      "hash": "330e36391c10d6c8ecf7cc87941be51508df9d19fce7201974114d2f2cac4982",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/33/330e36391c10d6c8ecf7cc87941be51508df9d19fce7201974114d2f2cac4982"
+    },
+    "compositions/frames/08-close.html": {
+      "hash": "f6ecf094b6b36a29baf39f444715c2e2c702ae6fbc81b23515c5e080e6d6229d",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/f6/f6ecf094b6b36a29baf39f444715c2e2c702ae6fbc81b23515c5e080e6d6229d"
+    },
+    "frame.md": {
+      "hash": "3af0a1e5e61bece19841671672d7732082f03d5699b713475e90323a21dbcc89",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/3a/3af0a1e5e61bece19841671672d7732082f03d5699b713475e90323a21dbcc89"
+    },
+    "hyperframes.json": {
+      "hash": "9313260261b6e431830877ee35083331270bc6b9a32d50650abe2bd58bdf558d",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/93/9313260261b6e431830877ee35083331270bc6b9a32d50650abe2bd58bdf558d"
+    },
+    "index.html": {
+      "hash": "9589ebed4071108e02848b08546b71a8af55e84a261d1bef9a1d76dc46a99d06",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/95/9589ebed4071108e02848b08546b71a8af55e84a261d1bef9a1d76dc46a99d06"
+    },
+    "meta.json": {
+      "hash": "1a8457b752355e9a7514fec26d10919aa7d41c4f8ec90f5275b91309cf774f47",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/1a/1a8457b752355e9a7514fec26d10919aa7d41c4f8ec90f5275b91309cf774f47"
+    },
+    "package.json": {
+      "hash": "630d8bf48fef2ff5e3260f94fda34998c85130756ff8d0055a99d1000dac7298",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/63/630d8bf48fef2ff5e3260f94fda34998c85130756ff8d0055a99d1000dac7298"
+    },
+    "assets/voice/02.wav": {
+      "hash": "8a4af3c2c0bf6c0b07c1c07b11b721eca58d50063819cc1d950e3ed7d686c506",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/8a/8a4af3c2c0bf6c0b07c1c07b11b721eca58d50063819cc1d950e3ed7d686c506"
+    },
+    "assets/voice/05.wav": {
+      "hash": "50c8a6c46973159fd0b6d0e2f0b21a6e42cc0802570b11c7c6ac13c498b1125e",
+      "content": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/50/50c8a6c46973159fd0b6d0e2f0b21a6e42cc0802570b11c7c6ac13c498b1125e"
+    }
+  },
+  "revisions": {
+    "3395c57d-29f2-4f2d-99f2-487b362a4a12": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792289267016,
+      "endedAt": 1792289267024,
+      "files": {
+        "compositions/frames/03-coach.html": {
+          "before": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/0e/0e2a9811b5693b18e7dd13502d3a3f2635189222d7e0cb89761e86f83bd20be9",
+          "after": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/a2/a2c491c8af45687a076fc3e5e711389f9cdecdf8078dc419ffe7c3f1ef00676d"
+        },
+        "compositions/frames/04-stop.html": {
+          "before": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/96/96558b3132f7071dc6da4f94ff98455502f1ca9015c6b0cea2bc13fb7af0cabf",
+          "after": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/58/5878fb4d229962aef885c4a7e78676dc532b78fbc1bd2e7cae135ea9629378e6"
+        },
+        "compositions/frames/05-engine.html": {
+          "before": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/2e/2e281779c3ed14a3227acd82a02324bf55ce03c51dd434a7fff468a8ee342756",
+          "after": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/ab/ab4e724b2026922760b369c9e3bb609f397e199c7840467fa79bf011c7064816"
+        },
+        "index.html": {
+          "before": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/12/128285786bf71c8c98d2521fc1bb6f71745e1423aa19536bba6dde3a542342cc",
+          "after": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/28/2813c5ef8e80c4561abe6d876215dd36e361080878b25b113affce6830442f4f"
+        }
+      }
+    },
+    "70a7f263-defe-4ec9-a593-91a7ae366942": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792289303585,
+      "endedAt": 1792289303592,
+      "files": {
+        "compositions/frames/08-close.html": {
+          "before": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/ad/ad68d8a7af92739611ee339371f2d4fe0484ec997839872bd4be1269d3b08d5c",
+          "after": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/f6/f6ecf094b6b36a29baf39f444715c2e2c702ae6fbc81b23515c5e080e6d6229d"
+        },
+        "index.html": {
+          "before": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/28/2813c5ef8e80c4561abe6d876215dd36e361080878b25b113affce6830442f4f",
+          "after": "/Users/abrar/.cache/hyperframes/history/0e4d6e20-470e-4486-a689-9742932b6bf3/blobs/95/9589ebed4071108e02848b08546b71a8af55e84a261d1bef9a1d76dc46a99d06"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "70a7f263-defe-4ec9-a593-91a7ae366942",
+      "id": "19bb6a22-413c-439f-bd01-ff1d9f4313e6"
+    },
+    "revisions": {
+      "3395c57d-29f2-4f2d-99f2-487b362a4a12": [
+        {
+          "id": "91320b0e-38cf-4d5e-b5c9-02c980667add",
+          "scope": "project",
+          "report": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/checks/91320b0e-38cf-4d5e-b5c9-02c980667add.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792289274136,
+          "contentHash": "2f063aef507c719ee4dd595cac3ac18f1c46ce768cc490a532a5cb3fd531ef86",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "70a7f263-defe-4ec9-a593-91a7ae366942": [
+        {
+          "id": "19bb6a22-413c-439f-bd01-ff1d9f4313e6",
+          "scope": "project",
+          "report": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/checks/19bb6a22-413c-439f-bd01-ff1d9f4313e6.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792289310547,
+          "contentHash": "e464737f5fa3e1634bb4605e9350c3546b1e6645d30ff0ff44af25e1e2b986c6",
+          "revision": "70a7f263-defe-4ec9-a593-91a7ae366942",
+          "inputFingerprint": "7de512747386df8f32690177890f974dda95b0866abe6c3293484e05a0b56da1",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "7114aac7-daa6-462a-8343-8feb7d4f9753",
+        "scope": "project",
+        "report": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/checks/7114aac7-daa6-462a-8343-8feb7d4f9753.json",
+        "metadata": {
+          "ok": true,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792289253044,
+        "contentHash": "3780333530666cffb465dd4340416c8a5e778568048eec74949a6af932024b23",
+        "revision": null,
+        "inputFingerprint": "e98750e8b49ef5e464868933f665c05059be24a78aa47166ff1092b71c524435",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+      "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-8"
+    },
+    "revisions": {
+      "3395c57d-29f2-4f2d-99f2-487b362a4a12": [
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-0",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-00-at-5.5s.png",
+          "time": 5.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "13e5ad32064d2c7008f9c4fadec70ec6266275766147c2c71eb586a76f36c313",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-1",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-01-at-20.5s.png",
+          "time": 20.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "60739acd6acfaf6ef7a67e5282d2a6597de9af8ff9eaf36761a9b6b2406c52d9",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-2",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-02-at-30.8s.png",
+          "time": 30.8,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "e8319e31a448c2bfa410ca6cf28f8675deec60db1758b20481197d7337d2300d",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-3",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-03-at-42.5s.png",
+          "time": 42.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "5e780063436d7bc8dd0f952f7f4d8ff13f9036c4ef6f4c03b0c1883ae97d41bf",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-4",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-04-at-67s.png",
+          "time": 67,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "6a4d2f51bd94e7d4f6db5910dfe77aec933b5bda6855735aa160661a62472dd5",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-5",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-05-at-77.5s.png",
+          "time": 77.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "5b7a9b00ebbca51aee7dc7fc035fefe3fb2fd21aa277ae2588884dcfccb6c0cc",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-6",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-06-at-86.5s.png",
+          "time": 86.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "8339bbae1455fe2955d029b116b0940046d4f4728e84ce62e92ae9a6a622eaf3",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-7",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-07-at-90.6s.png",
+          "time": 90.6,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "f6b1a2d6dd2b62fb0f056da280c48bea710d460d023006a628700f970aae6232",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "135b39ed-1279-4a2f-af1e-dc0cb90d36cd-8",
+          "image": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/.hyperframes/artifacts/snapshots/7025af45-0745-4e16-9d81-e00afaa81e28/frame-08-at-88.205s.png",
+          "time": 88.205,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792289285157,
+          "contentHash": "73bef43409194d150cfd4988ff278382aaa71a369248e6556a7955a9cae49d17",
+          "revision": "3395c57d-29f2-4f2d-99f2-487b362a4a12",
+          "inputFingerprint": "b2cd90f9782505c45ec6d916e9c7613cd1a555c494b023e4be7de79310ffc80d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "4df3c2da-4ec1-4c95-b098-b7649afd9066",
+      "completedAt": 1792289433307,
+      "output": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/renders/video.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}

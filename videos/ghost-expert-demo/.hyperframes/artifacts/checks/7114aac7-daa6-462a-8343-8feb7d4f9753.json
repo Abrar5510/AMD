@@ -1,0 +1,511 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "caption_track_kind_missing",
+        "severity": "warning",
+        "message": "<div id=\"el-captions\"> looks like captions but is not marked as such, so the timeline cannot group it on the caption track.",
+        "selector": "#el-captions",
+        "dataAttributes": {},
+        "sourceFile": "/Users/abrar/projects/AMD/videos/ghost-expert-demo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Add data-track-kind=\"captions\" to <div id=\"el-captions\">."
+      }
+    ],
+    "filesScanned": 10
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 4,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 18.902,
+        "selector": "#a02-t3",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 554.5,
+          "top": 489,
+          "right": 719.88,
+          "bottom": 525,
+          "width": 165.38,
+          "height": 36
+        },
+        "containerSelector": "#a02-edit",
+        "text": "hang the tag",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/02-author.html",
+        "bbox": {
+          "x": 554.5,
+          "y": 489,
+          "width": 165.38,
+          "height": 36
+        },
+        "firstSeen": 18.902,
+        "lastSeen": 18.902,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.902
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 25.259,
+        "selector": "#c03-hand",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 403.42,
+          "top": 823.18,
+          "right": 638.58,
+          "bottom": 962.82,
+          "width": 235.15,
+          "height": 139.64
+        },
+        "containerSelector": "#c03-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 72.82
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 403.42,
+          "y": 823.18,
+          "width": 235.15,
+          "height": 139.64
+        },
+        "firstSeen": 25.259,
+        "lastSeen": 25.259,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 35.363,
+        "selector": "#s04-driver",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 1273.25,
+          "top": 848.27,
+          "right": 1471.27,
+          "bottom": 906.93,
+          "width": 198.02,
+          "height": 58.66
+        },
+        "containerSelector": "#s04-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 16.93
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/04-stop.html",
+        "bbox": {
+          "x": 1273.25,
+          "y": 848.27,
+          "width": 198.02,
+          "height": 58.66
+        },
+        "firstSeen": 35.363,
+        "lastSeen": 35.363,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          35.363
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 35.363,
+        "selector": "#s04-hand",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 1445.31,
+          "top": 829.96,
+          "right": 1665.31,
+          "bottom": 925.96,
+          "width": 220,
+          "height": 96
+        },
+        "containerSelector": "#s04-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 35.96
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/04-stop.html",
+        "bbox": {
+          "x": 1445.31,
+          "y": 829.96,
+          "width": 220,
+          "height": 96
+        },
+        "firstSeen": 35.363,
+        "lastSeen": 35.363,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          35.363
+        ]
+      }
+    ],
+    "duration": 90.933,
+    "samples": [
+      5.052,
+      15.156,
+      25.259,
+      35.363,
+      45.467,
+      55.57,
+      65.674,
+      75.778,
+      85.881
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 4,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 10,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "1",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 126,
+          "y": 100.5,
+          "width": 13.046875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "2 ⚠",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 339.5,
+          "y": 100.5,
+          "width": 39.171875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "3 ⚠",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(3) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 553,
+          "y": 100.5,
+          "width": 39.171875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "4 ⚠",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(4) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 766.5,
+          "y": 100.5,
+          "width": 39.171875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "5 ⚠",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 980,
+          "y": 100.5,
+          "width": 39.171875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "6",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(6) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 1193.5,
+          "y": 100.5,
+          "width": 13.046875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "7",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(7) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 1407,
+          "y": 100.5,
+          "width": 13.046875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.14:1; WCAG AA requires 4.5:1.",
+        "text": "8",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(40,40,38)",
+        "ratio": 4.14,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,135)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(8) > span",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 1620.5,
+          "y": 100.5,
+          "width": 13.046875,
+          "height": 23
+        },
+        "time": 25.259,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 3.28:1; WCAG AA requires 4.5:1.",
+        "text": "expected step",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(57,56,55)",
+        "ratio": 3.28,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(161,161,154)",
+        "large": false,
+        "selector": "div > div:nth-of-type(5) > div > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/05-engine.html",
+        "bbox": {
+          "x": 680,
+          "y": 513,
+          "width": 330,
+          "height": 42
+        },
+        "time": 65.674,
+        "times": [
+          65.674
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 3.28:1; WCAG AA requires 4.5:1.",
+        "text": "newest skipped step",
+        "fg": "rgb(136,136,128)",
+        "bg": "rgb(57,56,55)",
+        "ratio": 3.28,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(161,161,154)",
+        "large": false,
+        "selector": "div > div:nth-of-type(5) > div > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/05-engine.html",
+        "bbox": {
+          "x": 680,
+          "y": 567,
+          "width": 330,
+          "height": 42
+        },
+        "time": 65.674,
+        "times": [
+          65.674
+        ]
+      }
+    ],
+    "enabled": true,
+    "samples": [
+      5.052,
+      25.259,
+      45.467,
+      65.674,
+      85.881
+    ],
+    "checked": 59,
+    "passed": 49
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

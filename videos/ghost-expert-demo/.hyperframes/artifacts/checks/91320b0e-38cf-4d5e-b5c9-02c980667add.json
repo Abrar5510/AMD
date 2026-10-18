@@ -1,0 +1,243 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "filesScanned": 10
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 4,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 18.902,
+        "selector": "#a02-t3",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 554.5,
+          "top": 489,
+          "right": 719.88,
+          "bottom": 525,
+          "width": 165.38,
+          "height": 36
+        },
+        "containerSelector": "#a02-edit",
+        "text": "hang the tag",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.",
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/02-author.html",
+        "bbox": {
+          "x": 554.5,
+          "y": 489,
+          "width": 165.38,
+          "height": 36
+        },
+        "firstSeen": 18.902,
+        "lastSeen": 18.902,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.902
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 25.259,
+        "selector": "#c03-hand",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 403.42,
+          "top": 823.18,
+          "right": 638.58,
+          "bottom": 962.82,
+          "width": 235.15,
+          "height": 139.64
+        },
+        "containerSelector": "#c03-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 72.82
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/03-coach.html",
+        "bbox": {
+          "x": 403.42,
+          "y": 823.18,
+          "width": 235.15,
+          "height": 139.64
+        },
+        "firstSeen": 25.259,
+        "lastSeen": 25.259,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          25.259
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 35.363,
+        "selector": "#s04-driver",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 1273.25,
+          "top": 848.27,
+          "right": 1471.27,
+          "bottom": 906.93,
+          "width": 198.02,
+          "height": 58.66
+        },
+        "containerSelector": "#s04-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 16.93
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/04-stop.html",
+        "bbox": {
+          "x": 1273.25,
+          "y": 848.27,
+          "width": 198.02,
+          "height": 58.66
+        },
+        "firstSeen": 35.363,
+        "lastSeen": 35.363,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          35.363
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 35.363,
+        "selector": "#s04-hand",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 1445.31,
+          "top": 829.96,
+          "right": 1665.31,
+          "bottom": 925.96,
+          "width": 220,
+          "height": 96
+        },
+        "containerSelector": "#s04-cam",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 110,
+          "top": 164,
+          "right": 1810,
+          "bottom": 890,
+          "width": 1700,
+          "height": 726
+        },
+        "overflow": {
+          "bottom": 35.96
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/frames/04-stop.html",
+        "bbox": {
+          "x": 1445.31,
+          "y": 829.96,
+          "width": 220,
+          "height": 96
+        },
+        "firstSeen": 35.363,
+        "lastSeen": 35.363,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          35.363
+        ]
+      }
+    ],
+    "duration": 90.933,
+    "samples": [
+      5.052,
+      15.156,
+      25.259,
+      35.363,
+      45.467,
+      55.57,
+      65.674,
+      75.778,
+      85.881
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 4,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": true,
+    "samples": [
+      5.052,
+      25.259,
+      45.467,
+      65.674,
+      85.881
+    ],
+    "checked": 59,
+    "passed": 59
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

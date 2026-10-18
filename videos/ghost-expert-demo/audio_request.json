@@ -1,0 +1,42 @@
+{
+  "provider": "auto",
+  "speed": "1.0",
+  "lines": [
+    {
+      "id": "01",
+      "text": "Your best technician retires next year. Thirty years of knowing which step gets people hurt. When she leaves, that knowledge leaves with her."
+    },
+    {
+      "id": "02",
+      "text": "With Ghost Expert, she films the job once and talks through it. Whisper, SigLIP and Gemma cut the video into eight steps, each with a visual check and a safety flag. She fixes what's wrong and approves. The expert owns the procedure. The AI only drafts it."
+    },
+    {
+      "id": "03",
+      "text": "Now a new hire does the same job under a camera. Each step turns green as Gemma confirms it, and a voice says what comes next."
+    },
+    {
+      "id": "04",
+      "text": "Here is the mistake that hurts technicians: opening the guard before testing that the machine is dead. The screen goes red. Stop. You haven't done step four. Her own hands show how, until the trainee does it."
+    },
+    {
+      "id": "05",
+      "text": "A vision model is sometimes confidently wrong, so it never decides alone. SigLIP watches every frame. Gemma checks two steps in parallel. A deterministic rule engine owns the state, and a stop needs two agreeing checks on different frames. In simulation, with a model that is wrong five percent of the time, false stops on correct trainees fall from fourteen percent to zero."
+    },
+    {
+      "id": "06",
+      "text": "Ask out loud where the filter goes, and her clip answers. At the end, the training manager gets a record: time per step, mistakes caught, competent or not."
+    },
+    {
+      "id": "07",
+      "text": "Four models, Gemma 3, SigLIP, Whisper and Kokoro, run together on one AMD Instinct GPU, served by vLLM on ROCm."
+    },
+    {
+      "id": "08",
+      "text": "Every plant has someone about to retire. Film them."
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  },
+  "voice": "aa9746e325ff46d482a54fe5bc87890f"
+}

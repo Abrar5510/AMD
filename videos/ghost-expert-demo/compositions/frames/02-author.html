@@ -1,0 +1,83 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Barlow"; font-weight: 700; src: url("assets/fonts/Barlow-700.woff2") format("woff2"); }
+    @font-face { font-family: "Barlow"; font-weight: 900; src: url("assets/fonts/Barlow-900.woff2") format("woff2"); }
+    @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; color: #F0ECE5; font-family: "Barlow", sans-serif; }
+    #a02-bg { position: absolute; inset: 0; background: #111111; }
+    .a02-mono { font-family: "IBM Plex Mono", monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; }
+    #a02-label { position: absolute; left: 110px; top: 100px; font-size: 22px; color: #E85D26; }
+    #a02-strip { position: absolute; left: 110px; top: 150px; width: 1700px; height: 120px; border: 2px solid #505048; display: flex; overflow: hidden; }
+    .a02-fr { flex: 1; border-right: 1px solid #282826; background: #1A1A18; }
+    .a02-fr:nth-child(odd) { background: #202020; }
+    #a02-head { position: absolute; left: 110px; top: 150px; width: 4px; height: 120px; background: #E85D26; }
+    #a02-models { position: absolute; left: 110px; top: 310px; display: flex; gap: 20px; }
+    .a02-chip { font-size: 22px; padding: 12px 20px; border: 2px solid #F0ECE5; color: #F0ECE5; }
+    #a02-cards { position: absolute; left: 110px; top: 400px; width: 1700px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 14px; }
+    .a02-card { height: 300px; background: #1A1A18; border-top: 4px solid #505048; padding: 18px 16px; position: relative; }
+    .a02-card.safe { border-top-color: #E85D26; }
+    .a02-n { font-size: 56px; font-weight: 900; line-height: 1; color: #888880; }
+    .a02-card.safe .a02-n { color: #E85D26; }
+    .a02-t { font-size: 30px; font-weight: 700; line-height: 1.05; margin-top: 14px; text-transform: lowercase; }
+    .a02-chk { position: absolute; left: 16px; bottom: 54px; font-size: 16px; color: #888880; }
+    .a02-flag { position: absolute; left: 16px; bottom: 18px; font-size: 16px; color: #E85D26; }
+    #a02-edit { position: absolute; left: 16px; top: 88px; font-size: 30px; font-weight: 700; color: #888880; text-transform: lowercase; }
+    #a02-edits { position: absolute; right: 110px; top: 100px; font-size: 22px; color: #F0ECE5; }
+    #a02-stamp { position: absolute; left: 1210px; top: 730px; padding: 14px 30px; border: 5px solid #E85D26; color: #E85D26; font-size: 56px; font-weight: 900; letter-spacing: 0.04em; }
+    #a02-own { position: absolute; left: 110px; top: 740px; font-size: 104px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.95; text-transform: lowercase; }
+    #a02-own span { color: #888880; font-size: 56px; font-weight: 700; letter-spacing: -0.02em; display: block; margin-top: 12px; }
+  </style>
+  <div id="root" data-composition-id="02-author" data-width="1920" data-height="1080" data-duration="16.095">
+    <div id="a02-bg" class="clip" data-start="0" data-duration="16.095" data-track-index="0"></div>
+    <div id="a02-label" class="a02-mono">expert.mp4 · narrated · one take</div>
+    <div id="a02-edits" class="a02-mono">Expert edits: <b id="a02-ec">0</b></div>
+    <div id="a02-strip">
+      <div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div><div class="a02-fr"></div>
+    </div>
+    <div id="a02-head"></div>
+    <div id="a02-models" class="a02-mono">
+      <div class="a02-chip" id="a02-m1">Whisper · narration</div>
+      <div class="a02-chip" id="a02-m2">SigLIP · scene cuts</div>
+      <div class="a02-chip" id="a02-m3">Gemma 3 · steps</div>
+    </div>
+    <div id="a02-cards">
+      <div class="a02-card"><div class="a02-n">1</div><div class="a02-t">switch off</div><div class="a02-chk a02-mono">✓ check</div></div>
+      <div class="a02-card safe"><div class="a02-n">2</div><div class="a02-t">lock the plug</div><div class="a02-chk a02-mono">✓ check</div><div class="a02-flag a02-mono">⚠ safety</div></div>
+      <div class="a02-card safe"><div class="a02-n">3</div><div class="a02-t" id="a02-t3">hang the tag</div><div id="a02-edit">add a label</div><div class="a02-chk a02-mono">✓ check</div><div class="a02-flag a02-mono">⚠ safety</div></div>
+      <div class="a02-card safe"><div class="a02-n">4</div><div class="a02-t">verify zero energy</div><div class="a02-chk a02-mono">✓ check</div><div class="a02-flag a02-mono">⚠ safety</div></div>
+      <div class="a02-card safe"><div class="a02-n">5</div><div class="a02-t">remove the cover</div><div class="a02-chk a02-mono">✓ check</div><div class="a02-flag a02-mono">⚠ safety</div></div>
+      <div class="a02-card"><div class="a02-n">6</div><div class="a02-t">swap the filter</div><div class="a02-chk a02-mono">✓ check</div></div>
+      <div class="a02-card"><div class="a02-n">7</div><div class="a02-t">refit the cover</div><div class="a02-chk a02-mono">✓ check</div></div>
+      <div class="a02-card"><div class="a02-n">8</div><div class="a02-t">restore power</div><div class="a02-chk a02-mono">✓ check</div></div>
+    </div>
+    <div id="a02-own">the expert owns it.<span>the ai only drafts it.</span></div>
+    <div id="a02-stamp" class="a02-mono">APPROVED</div>
+  </div>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const ec = { v: 0 };
+      const ecEl = document.getElementById("a02-ec");
+      tl.fromTo("#a02-label", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.2);
+      tl.fromTo("#a02-strip", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 1.2, ease: "power3.inOut" }, 0.3);
+      tl.fromTo("#a02-head", { x: 0, opacity: 1 }, { x: 1696, duration: 3.2, ease: "none" }, 1.5);
+      tl.fromTo("#a02-m1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 3.9);
+      tl.fromTo("#a02-m2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 4.7);
+      tl.fromTo("#a02-m3", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 5.3);
+      tl.fromTo("#a02-cards .a02-card", { opacity: 0, y: -60, scaleY: 0.4 }, { opacity: 1, y: 0, scaleY: 1, duration: 0.45, stagger: 0.07, ease: "power3.out" }, 6.4);
+      tl.fromTo("#a02-cards .a02-chk", { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.05 }, 7.9);
+      tl.fromTo("#a02-cards .a02-flag", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.08, ease: "power3.out" }, 8.8);
+      // the expert fixes one draft title
+      tl.fromTo("#a02-edit", { opacity: 1 }, { opacity: 0.6, duration: 0.3 }, 9.9);
+      tl.fromTo("#a02-t3", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 10.2);
+      tl.to("#a02-edit", { opacity: 0, duration: 0.3 }, 10.4);
+      tl.fromTo(ec, { v: 0 }, { v: 1, duration: 0.01, onUpdate: () => { ecEl.textContent = Math.round(ec.v); } }, 10.3);
+      tl.fromTo("#a02-stamp", { opacity: 0, scale: 1.8, rotation: -6 }, { opacity: 1, scale: 1, rotation: -6, duration: 0.3, ease: "power4.in" }, 11.0);
+      tl.fromTo("#a02-own", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 12.0);
+      tl.fromTo("#a02-own span", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 13.8);
+      window.__timelines["02-author"] = tl;
+    })();
+  </script>
+</template>
